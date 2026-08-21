@@ -1,0 +1,219 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Verbinden met Revoloo",
+        "description": "Er is nog geen inlogflow voor deze integratie. Vang het app-verkeer af (bijv. met mitmproxy) en kopieer de headers 'authorization' en 'hzuid' hierin.",
+        "data": {
+          "token": "Bearer token (authorization header)",
+          "hzuid": "hzuid header"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Revoloo opnieuw authenticeren",
+        "description": "Het opgeslagen token werd geweigerd. Vang nieuwe headers af vanuit de app en vul ze hier in.",
+        "data": {
+          "token": "Bearer token (authorization header)",
+          "hzuid": "hzuid header"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Het token of hzuid werd geweigerd door de API.",
+      "cannot_connect": "Kon de Revoloo API niet bereiken."
+    },
+    "abort": {
+      "already_configured": "Dit account is al geconfigureerd.",
+      "reauth_successful": "Opnieuw authenticeren is gelukt."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Ververssnelheid (seconden)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "last_event": {
+        "name": "Laatste gebeurtenis"
+      },
+      "litter_box_status": {
+        "name": "Status"
+      },
+      "auto_delay": {
+        "name": "Reinigingsvertraging"
+      },
+      "today_clean_count": {
+        "name": "Reinigingen vandaag"
+      },
+      "toilet_count": {
+        "name": "Totaal aantal toiletbezoeken"
+      },
+      "litter_remaining_days": {
+        "name": "Kattenbakvulling resterend"
+      },
+      "garbage_bag_remaining_days": {
+        "name": "Vuilniszak resterend"
+      },
+      "dnd_begin_time": {
+        "name": "Niet storen begintijd"
+      },
+      "dnd_end_time": {
+        "name": "Niet storen eindtijd"
+      },
+      "filter_remaining_days": {
+        "name": "Filter resterend"
+      },
+      "auto_qty": {
+        "name": "Automatische portiegrootte"
+      },
+      "manual_qty": {
+        "name": "Handmatige portiegrootte"
+      },
+      "plan_qty": {
+        "name": "Geplande portiegrootte"
+      },
+      "desiccant_remaining_days": {
+        "name": "Droogmiddel resterend"
+      },
+      "weight": {
+        "name": "Gewicht"
+      },
+      "litter_box_visits": {
+        "name": "Kattenbakbezoeken vandaag"
+      },
+      "litter_box_duration": {
+        "name": "Kattenbakduur vandaag"
+      },
+      "eating_count": {
+        "name": "Eetbeurten vandaag"
+      },
+      "eating_duration": {
+        "name": "Eetduur vandaag"
+      },
+      "drinking_count": {
+        "name": "Drinkbeurten vandaag"
+      },
+      "drinking_duration": {
+        "name": "Drinkduur vandaag"
+      },
+      "wc_status": {
+        "name": "WC-status"
+      },
+      "eat_status": {
+        "name": "Eet status"
+      },
+      "drink_status": {
+        "name": "Drink status"
+      },
+      "weight_status": {
+        "name": "Gewicht status"
+      }
+    },
+    "binary_sensor": {
+      "dnd_enabled": {
+        "name": "Niet storen ingeschakeld"
+      },
+      "ozone_enabled": {
+        "name": "Ozon geurverwijdering ingeschakeld"
+      },
+      "key_lock_enabled": {
+        "name": "Toetsenslot ingeschakeld"
+      },
+      "voice_enabled": {
+        "name": "Spraakmeldingen ingeschakeld"
+      },
+      "led_enabled": {
+        "name": "Led ingeschakeld"
+      },
+      "litter_sensor_enabled": {
+        "name": "Kattenbaksensor ingeschakeld"
+      },
+      "litter_reminder_enabled": {
+        "name": "Kattenbakvulling-herinnering ingeschakeld"
+      },
+      "garbage_bag_enabled": {
+        "name": "Vuilniszakhouder ingeschakeld"
+      },
+      "garbage_bag_reminder_enabled": {
+        "name": "Vuilniszak-herinnering ingeschakeld"
+      },
+      "water_flowing": {
+        "name": "Water stroomt"
+      },
+      "uvc_active": {
+        "name": "UVC-lamp actief"
+      },
+      "pet_present": {
+        "name": "Huisdier aanwezig"
+      },
+      "filter_reminder_enabled": {
+        "name": "Filter-herinnering ingeschakeld"
+      },
+      "food_available": {
+        "name": "Voer beschikbaar"
+      },
+      "lock_enabled": {
+        "name": "Slot ingeschakeld"
+      },
+      "power_status": {
+        "name": "Voedingsstatus"
+      },
+      "last_dispense_result": {
+        "name": "Resultaat laatste voerbeurt"
+      },
+      "desiccant_reminder_enabled": {
+        "name": "Droogmiddel-herinnering ingeschakeld"
+      }
+    },
+    "select": {
+      "litter_box_mode": {
+        "name": "Modus",
+        "state": {
+          "auto": "Auto",
+          "schedule": "Schema",
+          "smart": "Smart (helpt begraven)"
+        }
+      },
+      "water_dispenser_mode": {
+        "name": "Modus",
+        "state": {
+          "off": "Uit",
+          "continuous": "Continu",
+          "interval": "Interval"
+        }
+      }
+    },
+    "switch": {
+      "uvc_switch": {
+        "name": "UVC-sterilisatie"
+      }
+    },
+    "button": {
+      "clean_now": {
+        "name": "Nu reinigen"
+      },
+      "reset_weight": {
+        "name": "Gewichtskalibratie resetten"
+      },
+      "reset_filter": {
+        "name": "Filter resetten"
+      },
+      "sterilize": {
+        "name": "Steriliseren"
+      },
+      "dispense_food": {
+        "name": "Voer uitgeven"
+      }
+    },
+    "update": {
+      "firmware": {
+        "name": "Firmware"
+      }
+    }
+  }
+}
