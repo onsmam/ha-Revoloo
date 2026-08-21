@@ -1,0 +1,186 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Revoloo",
+        "description": "There is no login flow for this integration yet. Capture the app's traffic (e.g. with mitmproxy) and copy the 'authorization' and 'hzuid' request headers here.",
+        "data": {
+          "token": "Bearer token (authorization header)",
+          "hzuid": "hzuid header"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Reauthenticate Revoloo",
+        "description": "The stored token was rejected. Capture fresh headers from the app and enter them here.",
+        "data": {
+          "token": "Bearer token (authorization header)",
+          "hzuid": "hzuid header"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "The token or hzuid was rejected by the API.",
+      "cannot_connect": "Could not reach the Revoloo API."
+    },
+    "abort": {
+      "already_configured": "This account is already configured.",
+      "reauth_successful": "Re-authentication was successful."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Polling interval (seconds)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "last_event": {
+        "name": "Last event"
+      },
+      "litter_box_status": {
+        "name": "Status"
+      },
+      "today_clean_count": {
+        "name": "Cleanings today"
+      },
+      "toilet_count": {
+        "name": "Total toilet visits"
+      },
+      "litter_remaining_days": {
+        "name": "Litter remaining"
+      },
+      "garbage_bag_remaining_days": {
+        "name": "Garbage bag remaining"
+      },
+      "filter_remaining_days": {
+        "name": "Filter remaining"
+      },
+      "plan_qty": {
+        "name": "Planned portion size"
+      },
+      "desiccant_remaining_days": {
+        "name": "Desiccant remaining"
+      },
+      "weight": {
+        "name": "Weight"
+      },
+      "litter_box_visits": {
+        "name": "Litter box visits today"
+      },
+      "litter_box_duration": {
+        "name": "Litter box duration today"
+      },
+      "eating_count": {
+        "name": "Eating visits today"
+      },
+      "eating_duration": {
+        "name": "Eating duration today"
+      },
+      "drinking_count": {
+        "name": "Drinking visits today"
+      },
+      "drinking_duration": {
+        "name": "Drinking duration today"
+      },
+      "wc_status": {
+        "name": "WC status"
+      },
+      "eat_status": {
+        "name": "Eat status"
+      },
+      "drink_status": {
+        "name": "Drink status"
+      },
+      "weight_status": {
+        "name": "Weight status"
+      }
+    },
+    "binary_sensor": {
+      "litter_sensor_enabled": {
+        "name": "Litter sensor enabled"
+      },
+      "litter_reminder_enabled": {
+        "name": "Litter reminder enabled"
+      },
+      "garbage_bag_enabled": {
+        "name": "Garbage bag holder enabled"
+      },
+      "garbage_bag_reminder_enabled": {
+        "name": "Garbage bag reminder enabled"
+      },
+      "water_flowing": {
+        "name": "Water flowing"
+      },
+      "uvc_active": {
+        "name": "UVC lamp active"
+      },
+      "pet_present": {
+        "name": "Pet present"
+      },
+      "filter_reminder_enabled": {
+        "name": "Filter reminder enabled"
+      },
+      "food_available": {
+        "name": "Food available"
+      },
+      "desiccant_reminder_enabled": {
+        "name": "Desiccant reminder enabled"
+      }
+    },
+    "select": {
+      "litter_box_mode": {
+        "name": "Mode",
+        "state": {
+          "auto": "Auto",
+          "schedule": "Schedule",
+          "smart": "Smart (assisted burying)"
+        }
+      },
+      "water_dispenser_mode": {
+        "name": "Mode",
+        "state": {
+          "off": "Off",
+          "continuous": "Continuous",
+          "interval": "Interval"
+        }
+      }
+    },
+    "switch": {
+      "uvc_switch": {
+        "name": "UVC sterilization"
+      },
+      "key_lock": {
+        "name": "Button lock"
+      },
+      "led": {
+        "name": "LED"
+      }
+    },
+    "button": {
+      "clean_now": {
+        "name": "Clean now"
+      },
+      "reset_filter": {
+        "name": "Reset filter"
+      },
+      "sterilize": {
+        "name": "Sterilize"
+      },
+      "dispense_food": {
+        "name": "Dispense food"
+      }
+    },
+    "number": {
+      "litter_remind_cycle_days": {
+        "name": "Litter reminder cycle"
+      },
+      "garbage_bag_remind_cycle_days": {
+        "name": "Garbage bag reminder cycle"
+      }
+    }
+  }
+}
