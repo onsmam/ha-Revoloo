@@ -6,12 +6,13 @@ from dataclasses import dataclass
 from typing import Any
 
 from homeassistant.components.sensor import (
+    SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import UnitOfTime
+from homeassistant.const import UnitOfMass, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -142,7 +143,8 @@ _PET_SENSORS: tuple[RevolooPetSensorDescription, ...] = (
     RevolooPetSensorDescription(
         key="weight",
         translation_key="weight",
-        native_unit_of_measurement="kg",
+        device_class=SensorDeviceClass.WEIGHT,
+        native_unit_of_measurement=UnitOfMass.KILOGRAMS,
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=lambda p: p.get("today_weight"),
         attrs_fn=lambda p: {
