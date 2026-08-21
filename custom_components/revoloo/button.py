@@ -38,15 +38,6 @@ async def async_setup_entry(
                     action_fn=client.litter_box_one_key,
                 )
             )
-            entities.append(
-                RevolooButton(
-                    coordinator,
-                    user_device_id,
-                    key="reset_weight",
-                    translation_key="reset_weight",
-                    action_fn=client.litter_box_reset_device_weight,
-                )
-            )
         elif device.device_type == DEVICE_TYPE_WATER_DISPENSER:
             entities.append(
                 RevolooButton(

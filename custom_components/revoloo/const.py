@@ -10,7 +10,7 @@ CONF_HZUID = "hzuid"
 API_BASE_URL = "https://api.nottycat.com"
 APP_ID = "1"
 
-DEFAULT_SCAN_INTERVAL = timedelta(seconds=60)
+DEFAULT_SCAN_INTERVAL = timedelta(minutes=10)
 MIN_SCAN_INTERVAL = timedelta(seconds=15)
 CONF_SCAN_INTERVAL = "scan_interval"
 
@@ -46,3 +46,8 @@ WATER_DISPENSER_MODES = {
 }
 
 MANUFACTURER = "Notty Cat"
+
+# The only "action" value ever observed for the litter/garbage-bag reminder
+# reset calls; it both reconfigures the reminder cycle length and resets the
+# remaining-days countdown to it. Other action codes are not known.
+REMINDER_RESET_ACTION = 3

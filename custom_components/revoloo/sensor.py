@@ -13,7 +13,6 @@ from homeassistant.components.sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfTime
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
@@ -70,12 +69,6 @@ _LITTER_BOX_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
         value_fn=lambda i: _LITTER_BOX_STATUS.get(i.get("status"), i.get("status")),
     ),
     RevolooDeviceSensorDescription(
-        key="auto_delay",
-        translation_key="auto_delay",
-        native_unit_of_measurement=UnitOfTime.MINUTES,
-        value_fn=lambda i: i.get("auto_delay"),
-    ),
-    RevolooDeviceSensorDescription(
         key="today_clean_count",
         translation_key="today_clean_count",
         state_class=SensorStateClass.TOTAL_INCREASING,
@@ -101,18 +94,6 @@ _LITTER_BOX_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
         value_fn=lambda i: i.get("garbage_bag_remaining_days"),
         attrs_fn=lambda i: {"cycle_time_days": i.get("garbage_bag_cycle_time")},
     ),
-    RevolooDeviceSensorDescription(
-        key="dnd_begin_time",
-        translation_key="dnd_begin_time",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: i.get("dnd_begin_time") or None,
-    ),
-    RevolooDeviceSensorDescription(
-        key="dnd_end_time",
-        translation_key="dnd_end_time",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: i.get("dnd_end_time") or None,
-    ),
 )
 
 _WATER_DISPENSER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
@@ -124,32 +105,10 @@ _WATER_DISPENSER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
         value_fn=lambda i: i.get("remaining_days"),
         attrs_fn=lambda i: {"default_remaining_days": i.get("default_remaining_days")},
     ),
-    RevolooDeviceSensorDescription(
-        key="dnd_begin_time",
-        translation_key="dnd_begin_time",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: i.get("dnd_begin_time") or None,
-    ),
-    RevolooDeviceSensorDescription(
-        key="dnd_end_time",
-        translation_key="dnd_end_time",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: i.get("dnd_end_time") or None,
-    ),
 )
 
 _FEEDER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     _COMMON_EVENT_SENSOR,
-    RevolooDeviceSensorDescription(
-        key="auto_qty",
-        translation_key="auto_qty",
-        value_fn=lambda i: i.get("auto_qty"),
-    ),
-    RevolooDeviceSensorDescription(
-        key="manual_qty",
-        translation_key="manual_qty",
-        value_fn=lambda i: i.get("manual_qty"),
-    ),
     RevolooDeviceSensorDescription(
         key="plan_qty",
         translation_key="plan_qty",
@@ -161,18 +120,6 @@ _FEEDER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
         native_unit_of_measurement=UnitOfTime.DAYS,
         value_fn=lambda i: i.get("remaining_days"),
         attrs_fn=lambda i: {"default_remaining_days": i.get("default_remaining_days")},
-    ),
-    RevolooDeviceSensorDescription(
-        key="dnd_begin_time",
-        translation_key="dnd_begin_time",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: i.get("dnd_begin_time") or None,
-    ),
-    RevolooDeviceSensorDescription(
-        key="dnd_end_time",
-        translation_key="dnd_end_time",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: i.get("dnd_end_time") or None,
     ),
 )
 

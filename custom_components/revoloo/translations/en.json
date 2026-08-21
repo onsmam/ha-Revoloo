@@ -44,9 +44,6 @@
       "litter_box_status": {
         "name": "Status"
       },
-      "auto_delay": {
-        "name": "Cleaning delay"
-      },
       "today_clean_count": {
         "name": "Cleanings today"
       },
@@ -59,20 +56,8 @@
       "garbage_bag_remaining_days": {
         "name": "Garbage bag remaining"
       },
-      "dnd_begin_time": {
-        "name": "Do not disturb start"
-      },
-      "dnd_end_time": {
-        "name": "Do not disturb end"
-      },
       "filter_remaining_days": {
         "name": "Filter remaining"
-      },
-      "auto_qty": {
-        "name": "Automatic portion size"
-      },
-      "manual_qty": {
-        "name": "Manual portion size"
       },
       "plan_qty": {
         "name": "Planned portion size"
@@ -115,21 +100,6 @@
       }
     },
     "binary_sensor": {
-      "dnd_enabled": {
-        "name": "Do not disturb enabled"
-      },
-      "ozone_enabled": {
-        "name": "Ozone deodorization enabled"
-      },
-      "key_lock_enabled": {
-        "name": "Button lock enabled"
-      },
-      "voice_enabled": {
-        "name": "Voice prompts enabled"
-      },
-      "led_enabled": {
-        "name": "LED enabled"
-      },
       "litter_sensor_enabled": {
         "name": "Litter sensor enabled"
       },
@@ -157,15 +127,6 @@
       "food_available": {
         "name": "Food available"
       },
-      "lock_enabled": {
-        "name": "Lock enabled"
-      },
-      "power_status": {
-        "name": "Power status"
-      },
-      "last_dispense_result": {
-        "name": "Last dispense result"
-      },
       "desiccant_reminder_enabled": {
         "name": "Desiccant reminder enabled"
       }
@@ -191,14 +152,17 @@
     "switch": {
       "uvc_switch": {
         "name": "UVC sterilization"
+      },
+      "key_lock": {
+        "name": "Button lock"
+      },
+      "led": {
+        "name": "LED"
       }
     },
     "button": {
       "clean_now": {
         "name": "Clean now"
-      },
-      "reset_weight": {
-        "name": "Reset weight calibration"
       },
       "reset_filter": {
         "name": "Reset filter"
@@ -210,9 +174,12 @@
         "name": "Dispense food"
       }
     },
-    "update": {
-      "firmware": {
-        "name": "Firmware"
+    "number": {
+      "litter_remind_cycle_days": {
+        "name": "Litter reminder cycle"
+      },
+      "garbage_bag_remind_cycle_days": {
+        "name": "Garbage bag reminder cycle"
       }
     }
   }

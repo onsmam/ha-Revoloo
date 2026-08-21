@@ -11,7 +11,13 @@ from typing import Any
 
 from aiohttp import ClientError, ClientSession, ClientTimeout
 
-from .const import API_BASE_URL, APP_ID, APP_VERSION_HEADER, USER_AGENT
+from .const import (
+    API_BASE_URL,
+    APP_ID,
+    APP_VERSION_HEADER,
+    REMINDER_RESET_ACTION,
+    USER_AGENT,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -147,11 +153,37 @@ class RevolooApiClient:
             json_body={"user_device_id": user_device_id, "mode": mode},
         )
 
-    async def litter_box_reset_device_weight(self, user_device_id: int) -> None:
+    async def litter_box_set_key(self, user_device_id: int, enabled: bool) -> None:
         await self._request(
             "POST",
-            "/device/litter_box/reset_device_weight",
-            json_body={"user_device_id": str(user_device_id)},
+            "/device/litter_box/set_key",
+            json_body={"user_device_id": user_device_id, "switch": 1 if enabled else 0},
+        )
+
+    async def litter_box_set_litter_remind(
+        self, user_device_id: int, cycle_time: int
+    ) -> None:
+        await self._request(
+            "POST",
+            "/device/litter_box/set_litter_remind",
+            json_body={
+                "user_device_id": user_device_id,
+                "action": REMINDER_RESET_ACTION,
+                "cycle_time": cycle_time,
+            },
+        )
+
+    async def litter_box_set_garbage_bag_remind(
+        self, user_device_id: int, cycle_time: int
+    ) -> None:
+        await self._request(
+            "POST",
+            "/device/litter_box/set_garbage_bag_remind",
+            json_body={
+                "user_device_id": user_device_id,
+                "action": REMINDER_RESET_ACTION,
+                "cycle_time": cycle_time,
+            },
         )
 
     # -- Water dispenser controls --------------------------------------------
@@ -191,6 +223,24 @@ class RevolooApiClient:
             json_body={"user_device_id": user_device_id},
         )
 
+    async def water_dispenser_set_led(
+        self,
+        user_device_id: int,
+        led: bool,
+        dnd_begin_time: str = "",
+        dnd_end_time: str = "",
+    ) -> None:
+        await self._request(
+            "POST",
+            "/device/water_dispenser/set_led",
+            json_body={
+                "user_device_id": user_device_id,
+                "led": 1 if led else 0,
+                "dnd_begin_time": dnd_begin_time,
+                "dnd_end_time": dnd_end_time,
+            },
+        )
+
     # -- Feeder controls ------------------------------------------------------
 
     async def feeder_one_key(self, user_device_id: int, qty: int = 1) -> None:
@@ -198,4 +248,22 @@ class RevolooApiClient:
             "POST",
             "/device/feeder/one_key",
             json_body={"user_device_id": user_device_id, "qty": qty},
+        )
+
+    async def feeder_set_led(
+        self,
+        user_device_id: int,
+        led: bool,
+        dnd_begin_time: str = "",
+        dnd_end_time: str = "",
+    ) -> None:
+        await self._request(
+            "POST",
+            "/device/feeder/set_led",
+            json_body={
+                "user_device_id": user_device_id,
+                "led": 1 if led else 0,
+                "dnd_begin_time": dnd_begin_time,
+                "dnd_end_time": dnd_end_time,
+            },
         )

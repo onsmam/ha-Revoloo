@@ -38,36 +38,6 @@ class RevolooBinarySensorDescription(BinarySensorEntityDescription):
 
 _LITTER_BOX_BINARY_SENSORS: tuple[RevolooBinarySensorDescription, ...] = (
     RevolooBinarySensorDescription(
-        key="switch_dnd",
-        translation_key="dnd_enabled",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: bool(i.get("switch_dnd")),
-    ),
-    RevolooBinarySensorDescription(
-        key="switch_ozone",
-        translation_key="ozone_enabled",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: bool(i.get("switch_ozone")),
-    ),
-    RevolooBinarySensorDescription(
-        key="switch_key",
-        translation_key="key_lock_enabled",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: bool(i.get("switch_key")),
-    ),
-    RevolooBinarySensorDescription(
-        key="switch_voice",
-        translation_key="voice_enabled",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: bool(i.get("switch_voice")),
-    ),
-    RevolooBinarySensorDescription(
-        key="led",
-        translation_key="led_enabled",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: bool(i.get("led")),
-    ),
-    RevolooBinarySensorDescription(
         key="switch_litter",
         translation_key="litter_sensor_enabled",
         entity_category=EntityCategory.DIAGNOSTIC,
@@ -105,12 +75,6 @@ _WATER_DISPENSER_BINARY_SENSORS: tuple[RevolooBinarySensorDescription, ...] = (
         value_fn=lambda i: bool(i.get("uvc")),
     ),
     RevolooBinarySensorDescription(
-        key="led",
-        translation_key="led_enabled",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: bool(i.get("led")),
-    ),
-    RevolooBinarySensorDescription(
         key="present",
         translation_key="pet_present",
         device_class=BinarySensorDeviceClass.OCCUPANCY,
@@ -129,24 +93,6 @@ _FEEDER_BINARY_SENSORS: tuple[RevolooBinarySensorDescription, ...] = (
         key="food",
         translation_key="food_available",
         value_fn=lambda i: bool(i.get("food")),
-    ),
-    RevolooBinarySensorDescription(
-        key="lock",
-        translation_key="lock_enabled",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: bool(i.get("lock")),
-    ),
-    RevolooBinarySensorDescription(
-        key="power",
-        translation_key="power_status",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: bool(i.get("power")),
-    ),
-    RevolooBinarySensorDescription(
-        key="out_result",
-        translation_key="last_dispense_result",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: bool(i.get("out_result")),
     ),
     RevolooBinarySensorDescription(
         key="present",

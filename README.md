@@ -32,17 +32,19 @@ freshly captured pair.
 For every litter box, water fountain and feeder on the account:
 
 - **Sensors**: last event log line, remaining consumable days (litter,
-  garbage bags, filter, desiccant), portion sizes, do-not-disturb schedule,
-  firmware version (as an `update` entity), and more.
+  garbage bags, filter, desiccant), planned portion size, and more.
 - **Binary sensors**: read-only state for toggles observed in the app but for
-  which no "set" API call was ever captured (ozone, key lock, voice prompts,
-  LED, pet-present, etc. — see [Known limitations](#known-limitations)).
+  which no "set" API call was ever captured (litter/garbage-bag/filter/
+  desiccant reminder switches, pet-present, water flowing, UVC lamp active,
+  food available — see [Known limitations](#known-limitations)).
 - **Controls**:
-  - Litter box: mode select (Auto / Schedule / Smart), "Clean now" button,
-    "Reset weight calibration" button.
+  - Litter box: mode select (Auto / Schedule / Smart), button-lock switch,
+    litter-reminder and garbage-bag-reminder cycle (days, resets the
+    countdown when changed), "Clean now" button.
   - Water fountain: mode select (Off / Continuous / Interval), UVC
-    sterilization switch, "Reset filter" button, "Sterilize" button.
-  - Feeder: "Dispense food" button (dispenses one portion).
+    sterilization switch, LED switch, "Reset filter" button, "Sterilize"
+    button.
+  - Feeder: LED switch, "Dispense food" button (dispenses one portion).
 
 For every cat on the account: today's weight (kg), litter box / eating /
 drinking visit counts, their durations (seconds, with yesterday's value and
@@ -55,9 +57,9 @@ The captured traffic never included a request that changes the following
 settings, even though their current value is visible via the sensors above.
 They are exposed read-only for now:
 
-- Litter box: ozone deodorization, button lock, voice prompts, LED,
-  do-not-disturb schedule, cleaning delay.
-- Water fountain: LED, do-not-disturb schedule.
+- Litter box: ozone deodorization, voice prompts, do-not-disturb schedule,
+  cleaning delay.
+- Water fountain: do-not-disturb schedule.
 - Feeder: portion sizes, child lock, desiccant reminder reset, feeding
   schedule.
 
@@ -67,5 +69,5 @@ request/response bodies and they can be wired up as proper controls.
 
 ## Polling interval
 
-The default poll interval is 60 seconds; it can be changed from the
+The default poll interval is 10 minutes; it can be changed from the
 integration's options (`Configure` on the integration card).
