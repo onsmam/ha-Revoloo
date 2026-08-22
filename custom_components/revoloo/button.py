@@ -96,6 +96,16 @@ async def async_setup_entry(
                     action_fn=_dispense_manual_qty,
                 )
             )
+            entities.append(
+                RevolooButton(
+                    coordinator,
+                    user_device_id,
+                    key="reset_desiccant",
+                    translation_key="reset_desiccant",
+                    action_fn=client.feeder_reset_desiccant,
+                    entity_category=EntityCategory.CONFIG,
+                )
+            )
     async_add_entities(entities)
 
 

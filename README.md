@@ -32,11 +32,12 @@ freshly captured pair.
 For every litter box, water fountain and feeder on the account:
 
 - **Sensors**: last event log line, remaining consumable days (litter,
-  garbage bags, filter, desiccant), planned portion size, and more.
+  garbage bags, filter, desiccant), planned portion size, meals fed today
+  (total/auto/manual), water fountain status, and more.
 - **Binary sensors**: read-only state for toggles observed in the app but for
-  which no "set" API call was ever captured (litter/garbage-bag/filter/
-  desiccant reminder switches, pet-present, water flowing, UVC lamp active,
-  food available — see [Known limitations](#known-limitations)).
+  which no "set" API call was ever captured (litter/garbage-bag/filter
+  reminder switches, pet-present, water flowing, UVC lamp active, food
+  available — see [Known limitations](#known-limitations)).
 - **Controls**:
   - Litter box: mode select (Auto / Schedule / Smart), button-lock switch,
     litter-reminder and garbage-bag-reminder cycle (days, resets the
@@ -45,7 +46,9 @@ For every litter box, water fountain and feeder on the account:
   - Water fountain: mode select (Off / Continuous / Interval), UVC
     sterilization switch, LED switch, "Reset filter" button, "Sterilize"
     button.
-  - Feeder: LED switch, manual feed portion size, "Dispense food" button.
+  - Feeder: LED switch, function-button-lock switch, desiccant-reminder
+    switch, manual feed portion size, "Dispense food" and "Reset desiccant"
+    buttons.
 
 For every cat on the account: today's weight (kg), litter box / eating /
 drinking visit counts, their durations (seconds, with yesterday's value and
@@ -64,8 +67,8 @@ They are exposed read-only for now:
   app's UI rather than captured traffic — "Empty litter" isn't wired up yet
   pending their confirmation.
 - Water fountain: do-not-disturb schedule.
-- Feeder: automatic/planned portion sizes, child lock, desiccant reminder
-  reset, feeding schedule.
+- Feeder: automatic/planned portion sizes (still read-only sensors), feeding
+  schedule.
 
 If you can capture the corresponding requests (e.g. by toggling these in the
 app while running mitmproxy) please open an issue or PR with the

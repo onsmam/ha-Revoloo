@@ -257,6 +257,29 @@ class RevolooApiClient:
             json_body={"user_device_id": user_device_id, "qty": qty},
         )
 
+    async def feeder_set_desiccant_reminder(
+        self, user_device_id: int, enabled: bool
+    ) -> None:
+        await self._request(
+            "POST",
+            "/device/feeder/set_desiccant",
+            json_body={"user_device_id": user_device_id, "action": 1 if enabled else 2},
+        )
+
+    async def feeder_reset_desiccant(self, user_device_id: int) -> None:
+        await self._request(
+            "POST",
+            "/device/feeder/set_desiccant",
+            json_body={"user_device_id": user_device_id, "action": 3},
+        )
+
+    async def feeder_set_lock(self, user_device_id: int, enabled: bool) -> None:
+        await self._request(
+            "POST",
+            "/device/feeder/set_lock",
+            json_body={"user_device_id": user_device_id, "lock": 1 if enabled else 2},
+        )
+
     async def feeder_set_led(
         self,
         user_device_id: int,

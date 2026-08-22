@@ -101,12 +101,6 @@ _FEEDER_BINARY_SENSORS: tuple[RevolooBinarySensorDescription, ...] = (
         device_class=BinarySensorDeviceClass.OCCUPANCY,
         value_fn=lambda i: bool(i.get("present")),
     ),
-    RevolooBinarySensorDescription(
-        key="open_desiccant_remind",
-        translation_key="desiccant_reminder_enabled",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: bool(i.get("open_desiccant_remind")),
-    ),
 )
 
 DEVICE_BINARY_SENSORS: dict[str, tuple[RevolooBinarySensorDescription, ...]] = {

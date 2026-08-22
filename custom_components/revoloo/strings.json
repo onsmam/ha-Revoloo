@@ -100,6 +100,15 @@
       },
       "water_dispenser_status": {
         "name": "Status"
+      },
+      "meals_fed_today": {
+        "name": "Meals fed today"
+      },
+      "meals_fed_today_auto": {
+        "name": "Meals fed today (auto)"
+      },
+      "meals_fed_today_manual": {
+        "name": "Meals fed today (manual)"
       }
     },
     "binary_sensor": {
@@ -129,9 +138,6 @@
       },
       "food_available": {
         "name": "Food available"
-      },
-      "desiccant_reminder_enabled": {
-        "name": "Desiccant reminder enabled"
       }
     },
     "select": {
@@ -161,6 +167,12 @@
       },
       "led": {
         "name": "LED"
+      },
+      "desiccant_reminder": {
+        "name": "Desiccant reminder"
+      },
+      "function_lock": {
+        "name": "Button lock"
       }
     },
     "button": {
@@ -178,6 +190,9 @@
       },
       "smooth_litter": {
         "name": "Smooth litter"
+      },
+      "reset_desiccant": {
+        "name": "Reset desiccant"
       }
     },
     "number": {

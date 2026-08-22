@@ -41,6 +41,8 @@ async def async_setup_entry(
             entities.append(
                 RevolooLedSwitch(coordinator, user_device_id, client.feeder_set_led)
             )
+            entities.append(RevolooDesiccantReminderSwitch(coordinator, user_device_id))
+            entities.append(RevolooFunctionLockSwitch(coordinator, user_device_id))
     async_add_entities(entities)
 
 
@@ -134,3 +136,53 @@ class RevolooLedSwitch(RevolooDeviceEntity, SwitchEntity):
 
     async def async_turn_off(self, **kwargs) -> None:
         await self._async_set_led(False)
+
+
+class RevolooDesiccantReminderSwitch(RevolooDeviceEntity, SwitchEntity):
+    """Enables/disables the feeder's desiccant replacement reminder."""
+
+    _attr_translation_key = "desiccant_reminder"
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, coordinator: RevolooCoordinator, user_device_id: int) -> None:
+        super().__init__(coordinator, user_device_id)
+        self._attr_unique_id = f"{user_device_id}_desiccant_reminder"
+
+    @property
+    def is_on(self) -> bool:
+        return bool(self.device.info.get("open_desiccant_remind"))
+
+    async def async_turn_on(self, **kwargs) -> None:
+        await self.coordinator.client.feeder_set_desiccant_reminder(
+            self._user_device_id, True
+        )
+        await self.coordinator.async_request_refresh()
+
+    async def async_turn_off(self, **kwargs) -> None:
+        await self.coordinator.client.feeder_set_desiccant_reminder(
+            self._user_device_id, False
+        )
+        await self.coordinator.async_request_refresh()
+
+
+class RevolooFunctionLockSwitch(RevolooDeviceEntity, SwitchEntity):
+    """Enables/disables the feeder's function button lock."""
+
+    _attr_translation_key = "function_lock"
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, coordinator: RevolooCoordinator, user_device_id: int) -> None:
+        super().__init__(coordinator, user_device_id)
+        self._attr_unique_id = f"{user_device_id}_function_lock"
+
+    @property
+    def is_on(self) -> bool:
+        return bool(self.device.info.get("lock"))
+
+    async def async_turn_on(self, **kwargs) -> None:
+        await self.coordinator.client.feeder_set_lock(self._user_device_id, True)
+        await self.coordinator.async_request_refresh()
+
+    async def async_turn_off(self, **kwargs) -> None:
+        await self.coordinator.client.feeder_set_lock(self._user_device_id, False)
+        await self.coordinator.async_request_refresh()

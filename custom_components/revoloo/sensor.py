@@ -127,6 +127,24 @@ _WATER_DISPENSER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
 _FEEDER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     _COMMON_EVENT_SENSOR,
     RevolooDeviceSensorDescription(
+        key="meals_fed_today",
+        translation_key="meals_fed_today",
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        value_fn=lambda i: (i.get("auto_qty") or 0) + (i.get("manual_qty") or 0),
+    ),
+    RevolooDeviceSensorDescription(
+        key="meals_fed_today_auto",
+        translation_key="meals_fed_today_auto",
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        value_fn=lambda i: i.get("auto_qty"),
+    ),
+    RevolooDeviceSensorDescription(
+        key="meals_fed_today_manual",
+        translation_key="meals_fed_today_manual",
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        value_fn=lambda i: i.get("manual_qty"),
+    ),
+    RevolooDeviceSensorDescription(
         key="plan_qty",
         translation_key="plan_qty",
         entity_category=EntityCategory.CONFIG,
