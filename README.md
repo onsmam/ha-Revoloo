@@ -31,9 +31,12 @@ freshly captured pair.
 
 For every litter box, water fountain and feeder on the account:
 
-- **Sensors**: last event log line, remaining consumable days (litter,
-  garbage bags, filter, desiccant), planned portion size, meals fed today
-  (total/auto/manual), water fountain status, and more.
+- **Sensors**: last event log line, litter box status and cleaning/toilet
+  visit counts, remaining consumable days (litter, garbage bags, filter,
+  desiccant), planned portion size, meals fed today (total/auto/manual),
+  water fountain status, feeder status, and a read-only "Feeding plans"
+  sensor listing the feeder's current on-device plans (see
+  [Feeding schedule sync](#feeding-schedule-sync)).
 - **Binary sensors**: read-only state for toggles observed in the app but for
   which no "set" API call was ever captured (litter/garbage-bag/filter
   reminder switches, pet-present, water flowing, UVC lamp active, food
@@ -48,7 +51,8 @@ For every litter box, water fountain and feeder on the account:
     button.
   - Feeder: LED switch, function-button-lock switch, desiccant-reminder
     switch, manual feed portion size, "Dispense food" and "Reset desiccant"
-    buttons.
+    buttons, and (when a schedule helper is configured) a "Sync feeding
+    schedule" button — see [Feeding schedule sync](#feeding-schedule-sync).
 
 For every cat on the account: today's weight (kg), litter box / eating /
 drinking visit counts, their durations (seconds, with yesterday's value and
@@ -101,6 +105,14 @@ every plan is just a `{time, portions}` pair that repeats daily. A
 `schedule` helper is inherently weekly, so if you put different blocks on
 different days, they all get merged into one shared daily set (a warning is
 logged when this happens) rather than silently applied to only one day.
+
+The feeder's API has no bulk add/delete for plans (confirmed: the
+`delete_plan` endpoint's backend model only deserializes a single plan at a
+time, and a JSON array body is rejected outright), so a sync makes one HTTP
+call per plan deleted and re-added rather than a single batched request.
+This is unlikely to matter for a normal handful of daily feeding times, but
+means a sync with many plans takes a little longer than an instant round
+trip.
 
 ## Polling interval
 
