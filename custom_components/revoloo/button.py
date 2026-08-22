@@ -13,11 +13,13 @@ from .const import (
     DEVICE_TYPE_FEEDER,
     DEVICE_TYPE_LITTER_BOX,
     DEVICE_TYPE_WATER_DISPENSER,
+    FEEDER_SCHEDULE_ENTITY_PREFIX,
     LITTER_BOX_ONE_KEY_CLEAN,
     LITTER_BOX_ONE_KEY_SMOOTH,
 )
 from .coordinator import RevolooCoordinator
 from .entity import RevolooDeviceEntity
+from .feeding_schedule import async_sync_feeding_schedule
 
 
 async def async_setup_entry(
@@ -106,6 +108,15 @@ async def async_setup_entry(
                     entity_category=EntityCategory.CONFIG,
                 )
             )
+            schedule_entity_id = entry.options.get(
+                f"{FEEDER_SCHEDULE_ENTITY_PREFIX}{user_device_id}"
+            )
+            if schedule_entity_id:
+                entities.append(
+                    RevolooSyncScheduleButton(
+                        coordinator, user_device_id, schedule_entity_id
+                    )
+                )
     async_add_entities(entities)
 
 
@@ -130,4 +141,30 @@ class RevolooButton(RevolooDeviceEntity, ButtonEntity):
 
     async def async_press(self) -> None:
         await self._action_fn(self._user_device_id)
+        await self.coordinator.async_request_refresh()
+
+
+class RevolooSyncScheduleButton(RevolooDeviceEntity, ButtonEntity):
+    """Replace a feeder's on-device plans with a `schedule` helper's blocks."""
+
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(
+        self,
+        coordinator: RevolooCoordinator,
+        user_device_id: int,
+        schedule_entity_id: str,
+    ) -> None:
+        super().__init__(coordinator, user_device_id)
+        self._schedule_entity_id = schedule_entity_id
+        self._attr_translation_key = "sync_feeding_schedule"
+        self._attr_unique_id = f"{user_device_id}_sync_feeding_schedule"
+
+    async def async_press(self) -> None:
+        await async_sync_feeding_schedule(
+            self.hass,
+            self.coordinator.client,
+            self._user_device_id,
+            self._schedule_entity_id,
+        )
         await self.coordinator.async_request_refresh()

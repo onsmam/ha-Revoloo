@@ -11,7 +11,7 @@ from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import RevolooApiClient, RevolooApiError, RevolooAuthError
-from .const import DEVICE_ID_TYPE_MAP, DOMAIN
+from .const import DEVICE_ID_TYPE_MAP, DEVICE_TYPE_FEEDER, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -29,6 +29,7 @@ class RevolooDevice:
     device_type: str
     info: dict = field(default_factory=dict)
     upgrade: dict = field(default_factory=dict)
+    plans: list = field(default_factory=list)
 
 
 @dataclass
@@ -89,10 +90,22 @@ class RevolooCoordinator(DataUpdateCoordinator[RevolooData]):
                 )
 
             async def _fill_device(device: RevolooDevice) -> None:
-                info, upgrade = await asyncio.gather(
-                    self.client.get_info(device.device_type, device.user_device_id),
-                    self.client.check_upgrade(device.user_device_id),
-                )
+                if device.device_type == DEVICE_TYPE_FEEDER:
+                    info, upgrade, plans = await asyncio.gather(
+                        self.client.get_info(
+                            device.device_type, device.user_device_id
+                        ),
+                        self.client.check_upgrade(device.user_device_id),
+                        self.client.feeder_get_plans(device.user_device_id),
+                    )
+                    device.plans = plans
+                else:
+                    info, upgrade = await asyncio.gather(
+                        self.client.get_info(
+                            device.device_type, device.user_device_id
+                        ),
+                        self.client.check_upgrade(device.user_device_id),
+                    )
                 device.info = {**device.info, **info}
                 device.upgrade = upgrade
 

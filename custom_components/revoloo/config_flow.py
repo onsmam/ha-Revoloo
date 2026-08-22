@@ -12,6 +12,7 @@ from homeassistant.config_entries import (
     OptionsFlow,
 )
 from homeassistant.const import CONF_TOKEN
+from homeassistant.helpers import selector
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import RevolooApiClient, RevolooApiError, RevolooAuthError
@@ -19,7 +20,9 @@ from .const import (
     CONF_HZUID,
     CONF_SCAN_INTERVAL,
     DEFAULT_SCAN_INTERVAL,
+    DEVICE_TYPE_FEEDER,
     DOMAIN,
+    FEEDER_SCHEDULE_ENTITY_PREFIX,
     MIN_SCAN_INTERVAL,
 )
 
@@ -124,11 +127,27 @@ class RevolooOptionsFlow(OptionsFlow):
         current = self.config_entry.options.get(
             CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL.total_seconds()
         )
-        schema = vol.Schema(
-            {
-                vol.Required(CONF_SCAN_INTERVAL, default=current): vol.All(
-                    vol.Coerce(int), vol.Range(min=MIN_SCAN_INTERVAL.total_seconds())
-                ),
-            }
+        schema_dict: dict = {
+            vol.Required(CONF_SCAN_INTERVAL, default=current): vol.All(
+                vol.Coerce(int), vol.Range(min=MIN_SCAN_INTERVAL.total_seconds())
+            ),
+        }
+
+        coordinator = self.config_entry.runtime_data.coordinator
+        for user_device_id, device in coordinator.data.devices.items():
+            if device.device_type != DEVICE_TYPE_FEEDER:
+                continue
+            key = f"{FEEDER_SCHEDULE_ENTITY_PREFIX}{user_device_id}"
+            current_entity = self.config_entry.options.get(key)
+            field = (
+                vol.Optional(key, default=current_entity)
+                if current_entity
+                else vol.Optional(key)
+            )
+            schema_dict[field] = selector.EntitySelector(
+                selector.EntitySelectorConfig(domain="schedule")
+            )
+
+        return self.async_show_form(
+            step_id="init", data_schema=vol.Schema(schema_dict)
         )
-        return self.async_show_form(step_id="init", data_schema=schema)
