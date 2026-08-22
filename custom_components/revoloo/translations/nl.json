@@ -109,6 +109,9 @@
       },
       "meals_fed_today_manual": {
         "name": "Voerbeurten vandaag (handmatig)"
+      },
+      "feeder_status": {
+        "name": "Status"
       }
     },
     "binary_sensor": {

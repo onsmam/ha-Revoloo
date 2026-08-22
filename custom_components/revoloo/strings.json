@@ -109,6 +109,9 @@
       },
       "meals_fed_today_manual": {
         "name": "Meals fed today (manual)"
+      },
+      "feeder_status": {
+        "name": "Status"
       }
     },
     "binary_sensor": {
