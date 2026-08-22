@@ -167,6 +167,8 @@ _FEEDER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     ),
 )
 
+_FEEDER_PLAN_ATTR_KEYS = ("plan_id", "time", "quantity", "open")
+
 DEVICE_SENSORS: dict[str, tuple[RevolooDeviceSensorDescription, ...]] = {
     DEVICE_TYPE_LITTER_BOX: _LITTER_BOX_SENSORS,
     DEVICE_TYPE_WATER_DISPENSER: _WATER_DISPENSER_SENSORS,
@@ -295,6 +297,8 @@ async def async_setup_entry(
             entities.append(
                 RevolooDeviceSensor(coordinator, user_device_id, description)
             )
+        if device.device_type == DEVICE_TYPE_FEEDER:
+            entities.append(RevolooFeedingPlansSensor(coordinator, user_device_id))
     for pet_id in coordinator.data.pets:
         for description in _PET_SENSORS:
             entities.append(RevolooPetSensor(coordinator, pet_id, description))
@@ -326,6 +330,31 @@ class RevolooDeviceSensor(RevolooDeviceEntity, SensorEntity):
         if self.entity_description.attrs_fn is None:
             return None
         return self.entity_description.attrs_fn(self.device.info)
+
+
+class RevolooFeedingPlansSensor(RevolooDeviceEntity, SensorEntity):
+    """The feeder's current on-device feeding plans (read-only)."""
+
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_translation_key = "feeding_plans"
+    _attr_state_class = None
+
+    def __init__(self, coordinator: RevolooCoordinator, user_device_id: int) -> None:
+        super().__init__(coordinator, user_device_id)
+        self._attr_unique_id = f"{user_device_id}_feeding_plans"
+
+    @property
+    def native_value(self) -> int:
+        return len(self.device.plans)
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        return {
+            "plans": [
+                {k: plan.get(k) for k in _FEEDER_PLAN_ATTR_KEYS}
+                for plan in self.device.plans
+            ]
+        }
 
 
 class RevolooPetSensor(RevolooPetEntity, SensorEntity):

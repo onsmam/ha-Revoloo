@@ -112,6 +112,9 @@
       },
       "feeder_status": {
         "name": "Status"
+      },
+      "feeding_plans": {
+        "name": "Feeding plans"
       }
     },
     "binary_sensor": {
@@ -196,6 +199,9 @@
       },
       "reset_desiccant": {
         "name": "Reset desiccant"
+      },
+      "sync_feeding_schedule": {
+        "name": "Sync feeding schedule"
       }
     },
     "number": {
