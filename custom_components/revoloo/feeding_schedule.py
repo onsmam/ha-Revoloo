@@ -11,6 +11,7 @@ represent it — so a warning is logged when that happens.
 from __future__ import annotations
 
 import logging
+from datetime import time as dt_time
 
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
@@ -55,7 +56,13 @@ async def async_sync_feeding_schedule(
             portions = data.get(SCHEDULE_BLOCK_PORTIONS_KEY)
             if portions is None:
                 continue
-            time_str = block["from"][:5]  # "HH:MM:SS" -> "HH:MM"
+            from_value = block["from"]
+            # get_schedule returns "from"/"to" as datetime.time objects on
+            # some HA versions and as "HH:MM:SS" strings on others.
+            if isinstance(from_value, dt_time):
+                time_str = from_value.strftime("%H:%M")
+            else:
+                time_str = str(from_value)[:5]
             day_set.add((time_str, int(portions)))
         if day_set:
             day_blocksets.append(day_set)

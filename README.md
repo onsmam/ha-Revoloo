@@ -39,9 +39,9 @@ in Diagnostic); anything not called out below sits in the main section.
   total toilet visits, litter remaining (Diagnostic), garbage bag remaining
   (Diagnostic).
 - **Binary sensors** (Diagnostic, read-only — no "set" call was ever
-  captured for these): litter sensor enabled, litter reminder enabled,
-  garbage bag holder enabled, garbage bag reminder enabled.
+  captured for these): litter sensor enabled, garbage bag holder enabled.
 - **Controls**: mode select (Auto / Schedule / Smart), button-lock switch
+  (Config), litter-reminder and garbage-bag-reminder on/off switches
   (Config), litter-reminder cycle and garbage-bag-reminder cycle in days —
   resets the countdown when changed (Config), auto-clean delay 1-15 minutes
   (Config), "Clean now" button, "Smooth litter" button.
@@ -49,11 +49,10 @@ in Diagnostic); anything not called out below sits in the main section.
 ### Water fountain
 
 - **Sensors**: last event log line, status, filter remaining (Diagnostic).
-- **Binary sensors**: water flowing, UVC lamp active, pet present, filter
-  reminder enabled (Diagnostic, read-only).
+- **Binary sensors**: water flowing, UVC lamp active, pet present.
 - **Controls**: mode select (Off / Continuous / Interval), UVC sterilization
-  switch (Config), LED switch (Config), "Reset filter" button (Config),
-  "Sterilize" button.
+  switch (Config), LED switch (Config), filter-reminder on/off switch
+  (Config), "Reset filter" button (Config), "Sterilize" button.
 
 ### Feeder
 

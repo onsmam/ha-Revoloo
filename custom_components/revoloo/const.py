@@ -47,9 +47,15 @@ WATER_DISPENSER_MODES = {
 
 MANUFACTURER = "Notty Cat"
 
-# The only "action" value ever observed for the litter/garbage-bag reminder
-# reset calls; it both reconfigures the reminder cycle length and resets the
-# remaining-days countdown to it. Other action codes are not known.
+# Reminder-toggle "action" values shared by litter_box/set_litter_remind,
+# set_garbage_bag_remind, and water_dispenser/set_filter — all confirmed via
+# captured traffic. 1 turns the reminder on, 2 turns it off, 3 reconfigures
+# the reminder cycle length and resets the remaining-days countdown to it
+# (used by the reminder-cycle number entities). The litter box endpoints
+# also require a cycle_time on the "on" action; water_dispenser/set_filter
+# does not take one at all.
+REMINDER_ACTION_ON = 1
+REMINDER_ACTION_OFF = 2
 REMINDER_RESET_ACTION = 3
 
 # litter_box/one_key "one_key" values. 1 was captured directly (manual
