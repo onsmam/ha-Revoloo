@@ -172,6 +172,9 @@
       },
       "dispense_food": {
         "name": "Dispense food"
+      },
+      "smooth_litter": {
+        "name": "Smooth litter"
       }
     },
     "number": {
@@ -183,6 +186,9 @@
       },
       "manual_feed_qty": {
         "name": "Manual feed portions"
+      },
+      "auto_delay": {
+        "name": "Auto-clean delay"
       }
     }
   }

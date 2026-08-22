@@ -3,7 +3,8 @@
 Litter box reminder cycles: the same API call both reconfigures the cycle
 length and resets the remaining-days countdown to it, so a number entity
 (rather than a separate "set" + "reset" pair) matches how the app itself
-exposes this.
+exposes this. The litter box's auto-clean delay uses the same read/set
+pattern via a plain setter, so it reuses the same entity class.
 """
 from __future__ import annotations
 
@@ -45,6 +46,9 @@ async def async_setup_entry(
                     translation_key="litter_remind_cycle_days",
                     info_key="default_remaining_days",
                     set_fn=client.litter_box_set_litter_remind,
+                    min_value=1,
+                    max_value=90,
+                    unit=UnitOfTime.DAYS,
                 )
             )
             entities.append(
@@ -55,6 +59,22 @@ async def async_setup_entry(
                     translation_key="garbage_bag_remind_cycle_days",
                     info_key="garbage_bag_cycle_time",
                     set_fn=client.litter_box_set_garbage_bag_remind,
+                    min_value=1,
+                    max_value=90,
+                    unit=UnitOfTime.DAYS,
+                )
+            )
+            entities.append(
+                RevolooReminderCycleNumber(
+                    coordinator,
+                    user_device_id,
+                    key="auto_delay",
+                    translation_key="auto_delay",
+                    info_key="auto_delay",
+                    set_fn=client.litter_box_set_auto_delay,
+                    min_value=1,
+                    max_value=15,
+                    unit=UnitOfTime.MINUTES,
                 )
             )
         elif device.device_type == DEVICE_TYPE_FEEDER:
@@ -63,13 +83,9 @@ async def async_setup_entry(
 
 
 class RevolooReminderCycleNumber(RevolooDeviceEntity, NumberEntity):
-    """Sets a reminder's cycle length in days and resets its countdown."""
+    """Reads a device setting from get_info and writes it back via an API call."""
 
     _attr_entity_category = EntityCategory.CONFIG
-    _attr_native_min_value = 1
-    _attr_native_max_value = 90
-    _attr_native_step = 1
-    _attr_native_unit_of_measurement = UnitOfTime.DAYS
     _attr_mode = NumberMode.BOX
 
     def __init__(
@@ -81,12 +97,19 @@ class RevolooReminderCycleNumber(RevolooDeviceEntity, NumberEntity):
         translation_key: str,
         info_key: str,
         set_fn: Callable[[int, int], Awaitable[None]],
+        min_value: float,
+        max_value: float,
+        unit: str,
     ) -> None:
         super().__init__(coordinator, user_device_id)
         self._info_key = info_key
         self._set_fn = set_fn
         self._attr_translation_key = translation_key
         self._attr_unique_id = f"{user_device_id}_{key}"
+        self._attr_native_min_value = min_value
+        self._attr_native_max_value = max_value
+        self._attr_native_step = 1
+        self._attr_native_unit_of_measurement = unit
 
     @property
     def native_value(self) -> float | None:

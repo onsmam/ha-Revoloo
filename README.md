@@ -40,11 +40,12 @@ For every litter box, water fountain and feeder on the account:
 - **Controls**:
   - Litter box: mode select (Auto / Schedule / Smart), button-lock switch,
     litter-reminder and garbage-bag-reminder cycle (days, resets the
-    countdown when changed), "Clean now" button.
+    countdown when changed), auto-clean delay (1-15 min), "Clean now" and
+    "Smooth litter" buttons.
   - Water fountain: mode select (Off / Continuous / Interval), UVC
     sterilization switch, LED switch, "Reset filter" button, "Sterilize"
     button.
-  - Feeder: LED switch, "Dispense food" button (dispenses one portion).
+  - Feeder: LED switch, manual feed portion size, "Dispense food" button.
 
 For every cat on the account: today's weight (kg), litter box / eating /
 drinking visit counts, their durations (seconds, with yesterday's value and
@@ -57,11 +58,14 @@ The captured traffic never included a request that changes the following
 settings, even though their current value is visible via the sensors above.
 They are exposed read-only for now:
 
-- Litter box: ozone deodorization, voice prompts, do-not-disturb schedule,
-  cleaning delay.
+- Litter box: ozone deodorization, voice prompts, do-not-disturb schedule.
+  Also, the litter box's "Smooth litter" one_key value (3) and the "Empty
+  litter" value (guessed as 2) are the device owner's best guess from the
+  app's UI rather than captured traffic — "Empty litter" isn't wired up yet
+  pending their confirmation.
 - Water fountain: do-not-disturb schedule.
-- Feeder: portion sizes, child lock, desiccant reminder reset, feeding
-  schedule.
+- Feeder: automatic/planned portion sizes, child lock, desiccant reminder
+  reset, feeding schedule.
 
 If you can capture the corresponding requests (e.g. by toggling these in the
 app while running mitmproxy) please open an issue or PR with the

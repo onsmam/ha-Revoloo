@@ -172,6 +172,9 @@
       },
       "dispense_food": {
         "name": "Voer uitgeven"
+      },
+      "smooth_litter": {
+        "name": "Kattenbakvulling gladstrijken"
       }
     },
     "number": {
@@ -183,6 +186,9 @@
       },
       "manual_feed_qty": {
         "name": "Aantal porties (handmatig voeren)"
+      },
+      "auto_delay": {
+        "name": "Vertraging automatisch reinigen"
       }
     }
   }

@@ -13,6 +13,8 @@ from .const import (
     DEVICE_TYPE_FEEDER,
     DEVICE_TYPE_LITTER_BOX,
     DEVICE_TYPE_WATER_DISPENSER,
+    LITTER_BOX_ONE_KEY_CLEAN,
+    LITTER_BOX_ONE_KEY_SMOOTH,
 )
 from .coordinator import RevolooCoordinator
 from .entity import RevolooDeviceEntity
@@ -30,13 +32,33 @@ async def async_setup_entry(
     entities: list[ButtonEntity] = []
     for user_device_id, device in coordinator.data.devices.items():
         if device.device_type == DEVICE_TYPE_LITTER_BOX:
+
+            async def _clean_now(user_device_id: int) -> None:
+                await client.litter_box_one_key(
+                    user_device_id, one_key=LITTER_BOX_ONE_KEY_CLEAN
+                )
+
+            async def _smooth_litter(user_device_id: int) -> None:
+                await client.litter_box_one_key(
+                    user_device_id, one_key=LITTER_BOX_ONE_KEY_SMOOTH
+                )
+
             entities.append(
                 RevolooButton(
                     coordinator,
                     user_device_id,
                     key="clean_now",
                     translation_key="clean_now",
-                    action_fn=client.litter_box_one_key,
+                    action_fn=_clean_now,
+                )
+            )
+            entities.append(
+                RevolooButton(
+                    coordinator,
+                    user_device_id,
+                    key="smooth_litter",
+                    translation_key="smooth_litter",
+                    action_fn=_smooth_litter,
                 )
             )
         elif device.device_type == DEVICE_TYPE_WATER_DISPENSER:

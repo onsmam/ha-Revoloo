@@ -139,11 +139,18 @@ class RevolooApiClient:
 
     # -- Litter box controls -------------------------------------------------
 
-    async def litter_box_one_key(self, user_device_id: int) -> None:
+    async def litter_box_one_key(self, user_device_id: int, one_key: int = 1) -> None:
         await self._request(
             "POST",
             "/device/litter_box/one_key",
-            json_body={"user_device_id": user_device_id, "one_key": 1},
+            json_body={"user_device_id": user_device_id, "one_key": one_key},
+        )
+
+    async def litter_box_set_auto_delay(self, user_device_id: int, delay: int) -> None:
+        await self._request(
+            "POST",
+            "/device/litter_box/set_auto_delay",
+            json_body={"user_device_id": user_device_id, "delay": delay},
         )
 
     async def litter_box_set_mode(self, user_device_id: int, mode: int) -> None:
