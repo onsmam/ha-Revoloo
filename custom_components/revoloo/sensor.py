@@ -333,7 +333,12 @@ class RevolooDeviceSensor(RevolooDeviceEntity, SensorEntity):
 
 
 class RevolooFeedingPlansSensor(RevolooDeviceEntity, SensorEntity):
-    """The feeder's current on-device feeding plans (read-only)."""
+    """The feeder's current on-device feeding plans (read-only).
+
+    The state is a human-readable summary (e.g. "08:00 x1, 19:00 x3") so the
+    schedule is visible at a glance, e.g. right after a schedule sync, without
+    having to open the entity's attributes.
+    """
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_translation_key = "feeding_plans"
@@ -344,8 +349,17 @@ class RevolooFeedingPlansSensor(RevolooDeviceEntity, SensorEntity):
         self._attr_unique_id = f"{user_device_id}_feeding_plans"
 
     @property
-    def native_value(self) -> int:
-        return len(self.device.plans)
+    def native_value(self) -> str:
+        plans = self.device.plans
+        if not plans:
+            return "No plans"
+        parts = [
+            f"{plan.get('time')} x{plan.get('quantity')}"
+            + ("" if plan.get("open", True) else " (off)")
+            for plan in sorted(plans, key=lambda p: p.get("time") or "")
+        ]
+        summary = ", ".join(parts)
+        return summary[:255]
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
