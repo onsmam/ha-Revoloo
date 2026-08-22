@@ -121,14 +121,8 @@
       "litter_sensor_enabled": {
         "name": "Kattenbaksensor ingeschakeld"
       },
-      "litter_reminder_enabled": {
-        "name": "Kattenbakvulling-herinnering ingeschakeld"
-      },
       "garbage_bag_enabled": {
         "name": "Vuilniszakhouder ingeschakeld"
-      },
-      "garbage_bag_reminder_enabled": {
-        "name": "Vuilniszak-herinnering ingeschakeld"
       },
       "water_flowing": {
         "name": "Water stroomt"
@@ -138,9 +132,6 @@
       },
       "pet_present": {
         "name": "Huisdier aanwezig"
-      },
-      "filter_reminder_enabled": {
-        "name": "Filter-herinnering ingeschakeld"
       },
       "food_available": {
         "name": "Voer beschikbaar"
@@ -168,8 +159,17 @@
       "uvc_switch": {
         "name": "UVC-sterilisatie"
       },
+      "filter_reminder": {
+        "name": "Filter-herinnering"
+      },
       "key_lock": {
         "name": "Toetsenslot"
+      },
+      "litter_reminder": {
+        "name": "Kattenbakvulling-herinnering"
+      },
+      "garbage_bag_reminder": {
+        "name": "Vuilniszak-herinnering"
       },
       "led": {
         "name": "Led"

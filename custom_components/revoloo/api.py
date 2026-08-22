@@ -15,6 +15,8 @@ from .const import (
     API_BASE_URL,
     APP_ID,
     APP_VERSION_HEADER,
+    REMINDER_ACTION_OFF,
+    REMINDER_ACTION_ON,
     REMINDER_RESET_ACTION,
     USER_AGENT,
 )
@@ -180,6 +182,19 @@ class RevolooApiClient:
             },
         )
 
+    async def litter_box_set_litter_remind_enabled(
+        self, user_device_id: int, enabled: bool, cycle_time: int | None = None
+    ) -> None:
+        body: dict[str, Any] = {
+            "user_device_id": user_device_id,
+            "action": REMINDER_ACTION_ON if enabled else REMINDER_ACTION_OFF,
+        }
+        if enabled:
+            body["cycle_time"] = cycle_time
+        await self._request(
+            "POST", "/device/litter_box/set_litter_remind", json_body=body
+        )
+
     async def litter_box_set_garbage_bag_remind(
         self, user_device_id: int, cycle_time: int
     ) -> None:
@@ -191,6 +206,19 @@ class RevolooApiClient:
                 "action": REMINDER_RESET_ACTION,
                 "cycle_time": cycle_time,
             },
+        )
+
+    async def litter_box_set_garbage_bag_remind_enabled(
+        self, user_device_id: int, enabled: bool, cycle_time: int | None = None
+    ) -> None:
+        body: dict[str, Any] = {
+            "user_device_id": user_device_id,
+            "action": REMINDER_ACTION_ON if enabled else REMINDER_ACTION_OFF,
+        }
+        if enabled:
+            body["cycle_time"] = cycle_time
+        await self._request(
+            "POST", "/device/litter_box/set_garbage_bag_remind", json_body=body
         )
 
     # -- Water dispenser controls --------------------------------------------
@@ -220,7 +248,19 @@ class RevolooApiClient:
         await self._request(
             "POST",
             "/device/water_dispenser/set_filter",
-            json_body={"user_device_id": user_device_id, "action": 3},
+            json_body={"user_device_id": user_device_id, "action": REMINDER_RESET_ACTION},
+        )
+
+    async def water_dispenser_set_filter_remind_enabled(
+        self, user_device_id: int, enabled: bool, cycle_time: int | None = None
+    ) -> None:
+        await self._request(
+            "POST",
+            "/device/water_dispenser/set_filter",
+            json_body={
+                "user_device_id": user_device_id,
+                "action": REMINDER_ACTION_ON if enabled else REMINDER_ACTION_OFF,
+            },
         )
 
     async def water_dispenser_sterilize(self, user_device_id: int) -> None:

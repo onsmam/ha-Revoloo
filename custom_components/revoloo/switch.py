@@ -35,8 +35,40 @@ async def async_setup_entry(
                     entity_category=EntityCategory.CONFIG,
                 )
             )
+            entities.append(
+                RevolooReminderSwitch(
+                    coordinator,
+                    user_device_id,
+                    key="filter_reminder",
+                    translation_key="filter_reminder",
+                    state_info_key="open_filter_remind",
+                    set_fn=client.water_dispenser_set_filter_remind_enabled,
+                )
+            )
         elif device.device_type == DEVICE_TYPE_LITTER_BOX:
             entities.append(RevolooKeyLockSwitch(coordinator, user_device_id))
+            entities.append(
+                RevolooReminderSwitch(
+                    coordinator,
+                    user_device_id,
+                    key="litter_reminder",
+                    translation_key="litter_reminder",
+                    state_info_key="open_litter_remind",
+                    cycle_time_info_key="default_remaining_days",
+                    set_fn=client.litter_box_set_litter_remind_enabled,
+                )
+            )
+            entities.append(
+                RevolooReminderSwitch(
+                    coordinator,
+                    user_device_id,
+                    key="garbage_bag_reminder",
+                    translation_key="garbage_bag_reminder",
+                    state_info_key="open_garbagebag_remind",
+                    cycle_time_info_key="garbage_bag_cycle_time",
+                    set_fn=client.litter_box_set_garbage_bag_remind_enabled,
+                )
+            )
         elif device.device_type == DEVICE_TYPE_FEEDER:
             entities.append(
                 RevolooLedSwitch(coordinator, user_device_id, client.feeder_set_led)
@@ -93,6 +125,52 @@ class RevolooKeyLockSwitch(RevolooDeviceEntity, SwitchEntity):
 
     async def async_turn_off(self, **kwargs) -> None:
         await self.coordinator.client.litter_box_set_key(self._user_device_id, False)
+        await self.coordinator.async_request_refresh()
+
+
+class RevolooReminderSwitch(RevolooDeviceEntity, SwitchEntity):
+    """Enables/disables a litter box reminder notification.
+
+    Turning on re-sends the reminder's current cycle_time (the API requires
+    it on the "on" action); turning off sends no cycle_time, matching what
+    the app itself does.
+    """
+
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(
+        self,
+        coordinator: RevolooCoordinator,
+        user_device_id: int,
+        *,
+        key: str,
+        translation_key: str,
+        state_info_key: str,
+        cycle_time_info_key: str | None = None,
+        set_fn: Callable[[int, bool, int | None], Awaitable[None]],
+    ) -> None:
+        super().__init__(coordinator, user_device_id)
+        self._state_info_key = state_info_key
+        self._cycle_time_info_key = cycle_time_info_key
+        self._set_fn = set_fn
+        self._attr_translation_key = translation_key
+        self._attr_unique_id = f"{user_device_id}_{key}"
+
+    @property
+    def is_on(self) -> bool:
+        return bool(self.device.info.get(self._state_info_key))
+
+    async def async_turn_on(self, **kwargs) -> None:
+        cycle_time = (
+            self.device.info.get(self._cycle_time_info_key)
+            if self._cycle_time_info_key
+            else None
+        )
+        await self._set_fn(self._user_device_id, True, cycle_time)
+        await self.coordinator.async_request_refresh()
+
+    async def async_turn_off(self, **kwargs) -> None:
+        await self._set_fn(self._user_device_id, False, None)
         await self.coordinator.async_request_refresh()
 
 

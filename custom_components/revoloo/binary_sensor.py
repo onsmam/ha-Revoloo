@@ -44,22 +44,10 @@ _LITTER_BOX_BINARY_SENSORS: tuple[RevolooBinarySensorDescription, ...] = (
         value_fn=lambda i: bool(i.get("switch_litter")),
     ),
     RevolooBinarySensorDescription(
-        key="open_litter_remind",
-        translation_key="litter_reminder_enabled",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: bool(i.get("open_litter_remind")),
-    ),
-    RevolooBinarySensorDescription(
         key="garbage_bag_switch",
         translation_key="garbage_bag_enabled",
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda i: bool(i.get("garbage_bag_switch")),
-    ),
-    RevolooBinarySensorDescription(
-        key="open_garbagebag_remind",
-        translation_key="garbage_bag_reminder_enabled",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: bool(i.get("open_garbagebag_remind")),
     ),
 )
 
@@ -79,12 +67,6 @@ _WATER_DISPENSER_BINARY_SENSORS: tuple[RevolooBinarySensorDescription, ...] = (
         translation_key="pet_present",
         device_class=BinarySensorDeviceClass.OCCUPANCY,
         value_fn=lambda i: bool(i.get("present")),
-    ),
-    RevolooBinarySensorDescription(
-        key="open_filter_remind",
-        translation_key="filter_reminder_enabled",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: bool(i.get("open_filter_remind")),
     ),
 )
 

@@ -121,14 +121,8 @@
       "litter_sensor_enabled": {
         "name": "Litter sensor enabled"
       },
-      "litter_reminder_enabled": {
-        "name": "Litter reminder enabled"
-      },
       "garbage_bag_enabled": {
         "name": "Garbage bag holder enabled"
-      },
-      "garbage_bag_reminder_enabled": {
-        "name": "Garbage bag reminder enabled"
       },
       "water_flowing": {
         "name": "Water flowing"
@@ -138,9 +132,6 @@
       },
       "pet_present": {
         "name": "Pet present"
-      },
-      "filter_reminder_enabled": {
-        "name": "Filter reminder enabled"
       },
       "food_available": {
         "name": "Food available"
@@ -168,8 +159,17 @@
       "uvc_switch": {
         "name": "UVC sterilization"
       },
+      "filter_reminder": {
+        "name": "Filter reminder"
+      },
       "key_lock": {
         "name": "Button lock"
+      },
+      "litter_reminder": {
+        "name": "Litter reminder"
+      },
+      "garbage_bag_reminder": {
+        "name": "Garbage bag reminder"
       },
       "led": {
         "name": "LED"
