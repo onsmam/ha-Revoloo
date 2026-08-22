@@ -29,6 +29,11 @@ from .entity import RevolooDeviceEntity, RevolooPetEntity
 # Any other value is shown as its raw number rather than guessed at.
 _LITTER_BOX_STATUS = {0: "idle", 4: "cleaning"}
 
+# "status_id" is a generic field present on every device type (alongside
+# is_owner, aliyun_device_name, etc). Only 1 ("normal") has been confirmed
+# so far; other codes are unknown and shown as their raw number.
+_WATER_DISPENSER_STATUS = {1: "normal"}
+
 
 @dataclass(frozen=True, kw_only=True)
 class RevolooDeviceSensorDescription(SensorEntityDescription):
@@ -102,6 +107,13 @@ _LITTER_BOX_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
 
 _WATER_DISPENSER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     _COMMON_EVENT_SENSOR,
+    RevolooDeviceSensorDescription(
+        key="status_id",
+        translation_key="water_dispenser_status",
+        value_fn=lambda i: _WATER_DISPENSER_STATUS.get(
+            i.get("status_id"), i.get("status_id")
+        ),
+    ),
     RevolooDeviceSensorDescription(
         key="filter_remaining_days",
         translation_key="filter_remaining_days",

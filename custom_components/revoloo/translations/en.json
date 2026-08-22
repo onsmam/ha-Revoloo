@@ -97,6 +97,9 @@
       },
       "weight_status": {
         "name": "Weight status"
+      },
+      "water_dispenser_status": {
+        "name": "Status"
       }
     },
     "binary_sensor": {
