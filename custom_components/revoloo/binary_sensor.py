@@ -92,6 +92,7 @@ _FEEDER_BINARY_SENSORS: tuple[RevolooBinarySensorDescription, ...] = (
     RevolooBinarySensorDescription(
         key="food",
         translation_key="food_available",
+        entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda i: bool(i.get("food")),
     ),
     RevolooBinarySensorDescription(

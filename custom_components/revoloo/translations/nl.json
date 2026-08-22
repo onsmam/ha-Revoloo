@@ -180,6 +180,9 @@
       },
       "garbage_bag_remind_cycle_days": {
         "name": "Vuilniszak-interval"
+      },
+      "manual_feed_qty": {
+        "name": "Aantal porties (handmatig voeren)"
       }
     }
   }

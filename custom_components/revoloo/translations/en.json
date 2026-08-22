@@ -180,6 +180,9 @@
       },
       "garbage_bag_remind_cycle_days": {
         "name": "Garbage bag reminder cycle"
+      },
+      "manual_feed_qty": {
+        "name": "Manual feed portions"
       }
     }
   }

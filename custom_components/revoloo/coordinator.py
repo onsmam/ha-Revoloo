@@ -15,6 +15,11 @@ from .const import DEVICE_ID_TYPE_MAP, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
+# Fallback quantity for a feeder's "dispense now" button when the user hasn't
+# set a manual portion count yet (there is no device-side setting for this;
+# the API takes the quantity as a parameter on every one_key call).
+DEFAULT_MANUAL_FEED_QTY = 1
+
 
 @dataclass
 class RevolooDevice:
@@ -54,6 +59,13 @@ class RevolooCoordinator(DataUpdateCoordinator[RevolooData]):
             update_interval=update_interval,
         )
         self.client = client
+        # Not part of RevolooData: that gets replaced on every poll, this
+        # needs to survive across polls (it's restored from HA's entity
+        # state storage by the number entity, not fetched from the API).
+        self.manual_feed_qty: dict[int, int] = {}
+
+    def get_manual_feed_qty(self, user_device_id: int) -> int:
+        return self.manual_feed_qty.get(user_device_id, DEFAULT_MANUAL_FEED_QTY)
 
     async def _async_update_data(self) -> RevolooData:
         try:

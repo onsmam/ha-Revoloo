@@ -14,6 +14,7 @@ from homeassistant.components.sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfMass, UnitOfTime
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
@@ -84,6 +85,7 @@ _LITTER_BOX_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     RevolooDeviceSensorDescription(
         key="litter_remaining_days",
         translation_key="litter_remaining_days",
+        entity_category=EntityCategory.DIAGNOSTIC,
         native_unit_of_measurement=UnitOfTime.DAYS,
         value_fn=lambda i: i.get("remaining_days"),
         attrs_fn=lambda i: {"default_remaining_days": i.get("default_remaining_days")},
@@ -91,6 +93,7 @@ _LITTER_BOX_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     RevolooDeviceSensorDescription(
         key="garbage_bag_remaining_days",
         translation_key="garbage_bag_remaining_days",
+        entity_category=EntityCategory.DIAGNOSTIC,
         native_unit_of_measurement=UnitOfTime.DAYS,
         value_fn=lambda i: i.get("garbage_bag_remaining_days"),
         attrs_fn=lambda i: {"cycle_time_days": i.get("garbage_bag_cycle_time")},
@@ -102,6 +105,7 @@ _WATER_DISPENSER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     RevolooDeviceSensorDescription(
         key="filter_remaining_days",
         translation_key="filter_remaining_days",
+        entity_category=EntityCategory.DIAGNOSTIC,
         native_unit_of_measurement=UnitOfTime.DAYS,
         value_fn=lambda i: i.get("remaining_days"),
         attrs_fn=lambda i: {"default_remaining_days": i.get("default_remaining_days")},
@@ -113,11 +117,13 @@ _FEEDER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     RevolooDeviceSensorDescription(
         key="plan_qty",
         translation_key="plan_qty",
+        entity_category=EntityCategory.CONFIG,
         value_fn=lambda i: i.get("plan_qty"),
     ),
     RevolooDeviceSensorDescription(
         key="desiccant_remaining_days",
         translation_key="desiccant_remaining_days",
+        entity_category=EntityCategory.DIAGNOSTIC,
         native_unit_of_measurement=UnitOfTime.DAYS,
         value_fn=lambda i: i.get("remaining_days"),
         attrs_fn=lambda i: {"default_remaining_days": i.get("default_remaining_days")},

@@ -6,6 +6,7 @@ from collections.abc import Awaitable, Callable
 from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
@@ -46,6 +47,7 @@ async def async_setup_entry(
                     key="reset_filter",
                     translation_key="reset_filter",
                     action_fn=client.water_dispenser_reset_filter,
+                    entity_category=EntityCategory.CONFIG,
                 )
             )
             entities.append(
@@ -58,13 +60,18 @@ async def async_setup_entry(
                 )
             )
         elif device.device_type == DEVICE_TYPE_FEEDER:
+
+            async def _dispense_manual_qty(user_device_id: int) -> None:
+                qty = coordinator.get_manual_feed_qty(user_device_id)
+                await client.feeder_one_key(user_device_id, qty=qty)
+
             entities.append(
                 RevolooButton(
                     coordinator,
                     user_device_id,
                     key="dispense_food",
                     translation_key="dispense_food",
-                    action_fn=client.feeder_one_key,
+                    action_fn=_dispense_manual_qty,
                 )
             )
     async_add_entities(entities)
@@ -81,11 +88,13 @@ class RevolooButton(RevolooDeviceEntity, ButtonEntity):
         key: str,
         translation_key: str,
         action_fn: Callable[[int], Awaitable[None]],
+        entity_category: EntityCategory | None = None,
     ) -> None:
         super().__init__(coordinator, user_device_id)
         self._action_fn = action_fn
         self._attr_translation_key = translation_key
         self._attr_unique_id = f"{user_device_id}_{key}"
+        self._attr_entity_category = entity_category
 
     async def async_press(self) -> None:
         await self._action_fn(self._user_device_id)
