@@ -280,6 +280,46 @@ class RevolooApiClient:
             json_body={"user_device_id": user_device_id, "lock": 1 if enabled else 2},
         )
 
+    async def feeder_get_plans(self, user_device_id: int) -> list[dict[str, Any]]:
+        payload = await self._request(
+            "GET", f"/device/feeder/plans/{user_device_id}"
+        )
+        return payload.get("data", [])
+
+    async def feeder_open_plan(self, plan_id: int, open_: bool) -> None:
+        await self._request(
+            "POST",
+            "/device/feeder/open_plan",
+            json_body={"plan_id": plan_id, "open": open_},
+        )
+
+    async def feeder_edit_plan(self, plan_id: int, time: str, quantity: int) -> None:
+        await self._request(
+            "POST",
+            "/device/feeder/edit_plan",
+            json_body={"plan_id": plan_id, "time": time, "quantity": quantity},
+        )
+
+    async def feeder_add_plan(
+        self, user_device_id: int, time: str, quantity: int
+    ) -> None:
+        await self._request(
+            "POST",
+            "/device/feeder/add_plan",
+            json_body={
+                "user_device_id": user_device_id,
+                "time": time,
+                "quantity": quantity,
+            },
+        )
+
+    async def feeder_delete_plan(self, plan_id: int) -> None:
+        await self._request(
+            "POST",
+            "/device/feeder/delete_plan",
+            json_body={"plan_id": plan_id},
+        )
+
     async def feeder_set_led(
         self,
         user_device_id: int,
