@@ -122,7 +122,10 @@ can be driven from a Home Assistant `schedule` helper instead of the app:
 Syncing **deletes every plan currently on the device and re-adds** the ones
 from the schedule helper — it's a one-way, full replace, not a merge. The
 device's actual plan list (as last read from the API) is shown separately in
-a read-only "Feeding plans" sensor, so you can confirm the push worked.
+a read-only "Feeding plans" sensor, so you can confirm the push worked. Its
+state is a readable summary like `08:00 x1, 19:00 x3` (a plan turned off in
+the app shows as `08:00 x1 (off)`); the full list with plan IDs is also
+available as an attribute for automations.
 
 The device has no concept of different plans on different days of the week —
 every plan is just a `{time, portions}` pair that repeats daily. A
