@@ -11,9 +11,14 @@ from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import RevolooApiClient, RevolooApiError, RevolooAuthError
-from .const import DEVICE_ID_TYPE_MAP, DOMAIN
+from .const import DEVICE_ID_TYPE_MAP, DEVICE_TYPE_FEEDER, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+
+# Fallback quantity for a feeder's "dispense now" button when the user hasn't
+# set a manual portion count yet (there is no device-side setting for this;
+# the API takes the quantity as a parameter on every one_key call).
+DEFAULT_MANUAL_FEED_QTY = 1
 
 
 @dataclass
@@ -24,6 +29,7 @@ class RevolooDevice:
     device_type: str
     info: dict = field(default_factory=dict)
     upgrade: dict = field(default_factory=dict)
+    plans: list = field(default_factory=list)
 
 
 @dataclass
@@ -54,6 +60,13 @@ class RevolooCoordinator(DataUpdateCoordinator[RevolooData]):
             update_interval=update_interval,
         )
         self.client = client
+        # Not part of RevolooData: that gets replaced on every poll, this
+        # needs to survive across polls (it's restored from HA's entity
+        # state storage by the number entity, not fetched from the API).
+        self.manual_feed_qty: dict[int, int] = {}
+
+    def get_manual_feed_qty(self, user_device_id: int) -> int:
+        return self.manual_feed_qty.get(user_device_id, DEFAULT_MANUAL_FEED_QTY)
 
     async def _async_update_data(self) -> RevolooData:
         try:
@@ -77,10 +90,22 @@ class RevolooCoordinator(DataUpdateCoordinator[RevolooData]):
                 )
 
             async def _fill_device(device: RevolooDevice) -> None:
-                info, upgrade = await asyncio.gather(
-                    self.client.get_info(device.device_type, device.user_device_id),
-                    self.client.check_upgrade(device.user_device_id),
-                )
+                if device.device_type == DEVICE_TYPE_FEEDER:
+                    info, upgrade, plans = await asyncio.gather(
+                        self.client.get_info(
+                            device.device_type, device.user_device_id
+                        ),
+                        self.client.check_upgrade(device.user_device_id),
+                        self.client.feeder_get_plans(device.user_device_id),
+                    )
+                    device.plans = plans
+                else:
+                    info, upgrade = await asyncio.gather(
+                        self.client.get_info(
+                            device.device_type, device.user_device_id
+                        ),
+                        self.client.check_upgrade(device.user_device_id),
+                    )
                 device.info = {**device.info, **info}
                 device.upgrade = upgrade
 

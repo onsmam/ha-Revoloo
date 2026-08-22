@@ -97,6 +97,24 @@
       },
       "weight_status": {
         "name": "Gewicht status"
+      },
+      "water_dispenser_status": {
+        "name": "Status"
+      },
+      "meals_fed_today": {
+        "name": "Voerbeurten vandaag"
+      },
+      "meals_fed_today_auto": {
+        "name": "Voerbeurten vandaag (automatisch)"
+      },
+      "meals_fed_today_manual": {
+        "name": "Voerbeurten vandaag (handmatig)"
+      },
+      "feeder_status": {
+        "name": "Status"
+      },
+      "feeding_plans": {
+        "name": "Voerplannen"
       }
     },
     "binary_sensor": {
@@ -126,9 +144,6 @@
       },
       "food_available": {
         "name": "Voer beschikbaar"
-      },
-      "desiccant_reminder_enabled": {
-        "name": "Droogmiddel-herinnering ingeschakeld"
       }
     },
     "select": {
@@ -158,6 +173,12 @@
       },
       "led": {
         "name": "Led"
+      },
+      "desiccant_reminder": {
+        "name": "Droogmiddelherinnering"
+      },
+      "function_lock": {
+        "name": "Toetsenslot"
       }
     },
     "button": {
@@ -172,6 +193,15 @@
       },
       "dispense_food": {
         "name": "Voer uitgeven"
+      },
+      "smooth_litter": {
+        "name": "Kattenbakvulling gladstrijken"
+      },
+      "reset_desiccant": {
+        "name": "Droogmiddel resetten"
+      },
+      "sync_feeding_schedule": {
+        "name": "Voerschema synchroniseren"
       }
     },
     "number": {
@@ -180,6 +210,12 @@
       },
       "garbage_bag_remind_cycle_days": {
         "name": "Vuilniszak-interval"
+      },
+      "manual_feed_qty": {
+        "name": "Aantal porties (handmatig voeren)"
+      },
+      "auto_delay": {
+        "name": "Vertraging automatisch reinigen"
       }
     }
   }

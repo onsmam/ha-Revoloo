@@ -6,6 +6,7 @@ from collections.abc import Awaitable, Callable
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DEVICE_TYPE_FEEDER, DEVICE_TYPE_LITTER_BOX, DEVICE_TYPE_WATER_DISPENSER
@@ -27,7 +28,12 @@ async def async_setup_entry(
         if device.device_type == DEVICE_TYPE_WATER_DISPENSER:
             entities.append(RevolooUvcSwitch(coordinator, user_device_id))
             entities.append(
-                RevolooLedSwitch(coordinator, user_device_id, client.water_dispenser_set_led)
+                RevolooLedSwitch(
+                    coordinator,
+                    user_device_id,
+                    client.water_dispenser_set_led,
+                    entity_category=EntityCategory.CONFIG,
+                )
             )
         elif device.device_type == DEVICE_TYPE_LITTER_BOX:
             entities.append(RevolooKeyLockSwitch(coordinator, user_device_id))
@@ -35,6 +41,8 @@ async def async_setup_entry(
             entities.append(
                 RevolooLedSwitch(coordinator, user_device_id, client.feeder_set_led)
             )
+            entities.append(RevolooDesiccantReminderSwitch(coordinator, user_device_id))
+            entities.append(RevolooFunctionLockSwitch(coordinator, user_device_id))
     async_add_entities(entities)
 
 
@@ -42,6 +50,7 @@ class RevolooUvcSwitch(RevolooDeviceEntity, SwitchEntity):
     """Enables/disables the water dispenser's UVC sterilization lamp."""
 
     _attr_translation_key = "uvc_switch"
+    _attr_entity_category = EntityCategory.CONFIG
 
     def __init__(self, coordinator: RevolooCoordinator, user_device_id: int) -> None:
         super().__init__(coordinator, user_device_id)
@@ -68,6 +77,7 @@ class RevolooKeyLockSwitch(RevolooDeviceEntity, SwitchEntity):
     """Enables/disables the litter box's button lock."""
 
     _attr_translation_key = "key_lock"
+    _attr_entity_category = EntityCategory.CONFIG
 
     def __init__(self, coordinator: RevolooCoordinator, user_device_id: int) -> None:
         super().__init__(coordinator, user_device_id)
@@ -100,10 +110,13 @@ class RevolooLedSwitch(RevolooDeviceEntity, SwitchEntity):
         coordinator: RevolooCoordinator,
         user_device_id: int,
         set_led_fn: Callable[[int, bool, str, str], Awaitable[None]],
+        *,
+        entity_category: EntityCategory | None = None,
     ) -> None:
         super().__init__(coordinator, user_device_id)
         self._set_led_fn = set_led_fn
         self._attr_unique_id = f"{user_device_id}_led"
+        self._attr_entity_category = entity_category
 
     @property
     def is_on(self) -> bool:
@@ -123,3 +136,53 @@ class RevolooLedSwitch(RevolooDeviceEntity, SwitchEntity):
 
     async def async_turn_off(self, **kwargs) -> None:
         await self._async_set_led(False)
+
+
+class RevolooDesiccantReminderSwitch(RevolooDeviceEntity, SwitchEntity):
+    """Enables/disables the feeder's desiccant replacement reminder."""
+
+    _attr_translation_key = "desiccant_reminder"
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, coordinator: RevolooCoordinator, user_device_id: int) -> None:
+        super().__init__(coordinator, user_device_id)
+        self._attr_unique_id = f"{user_device_id}_desiccant_reminder"
+
+    @property
+    def is_on(self) -> bool:
+        return bool(self.device.info.get("open_desiccant_remind"))
+
+    async def async_turn_on(self, **kwargs) -> None:
+        await self.coordinator.client.feeder_set_desiccant_reminder(
+            self._user_device_id, True
+        )
+        await self.coordinator.async_request_refresh()
+
+    async def async_turn_off(self, **kwargs) -> None:
+        await self.coordinator.client.feeder_set_desiccant_reminder(
+            self._user_device_id, False
+        )
+        await self.coordinator.async_request_refresh()
+
+
+class RevolooFunctionLockSwitch(RevolooDeviceEntity, SwitchEntity):
+    """Enables/disables the feeder's function button lock."""
+
+    _attr_translation_key = "function_lock"
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, coordinator: RevolooCoordinator, user_device_id: int) -> None:
+        super().__init__(coordinator, user_device_id)
+        self._attr_unique_id = f"{user_device_id}_function_lock"
+
+    @property
+    def is_on(self) -> bool:
+        return bool(self.device.info.get("lock"))
+
+    async def async_turn_on(self, **kwargs) -> None:
+        await self.coordinator.client.feeder_set_lock(self._user_device_id, True)
+        await self.coordinator.async_request_refresh()
+
+    async def async_turn_off(self, **kwargs) -> None:
+        await self.coordinator.client.feeder_set_lock(self._user_device_id, False)
+        await self.coordinator.async_request_refresh()

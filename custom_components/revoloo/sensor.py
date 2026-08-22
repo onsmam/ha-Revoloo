@@ -14,6 +14,7 @@ from homeassistant.components.sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfMass, UnitOfTime
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
@@ -27,6 +28,11 @@ from .entity import RevolooDeviceEntity, RevolooPetEntity
 # Best-effort labels for device status codes actually observed in the capture.
 # Any other value is shown as its raw number rather than guessed at.
 _LITTER_BOX_STATUS = {0: "idle", 4: "cleaning"}
+
+# "status_id" is a generic field present on every device type (alongside
+# is_owner, aliyun_device_name, etc). Only 1 ("normal") has been confirmed
+# so far; other codes are unknown and shown as their raw number.
+_STATUS_ID_LABELS = {1: "normal"}
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -84,6 +90,7 @@ _LITTER_BOX_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     RevolooDeviceSensorDescription(
         key="litter_remaining_days",
         translation_key="litter_remaining_days",
+        entity_category=EntityCategory.DIAGNOSTIC,
         native_unit_of_measurement=UnitOfTime.DAYS,
         value_fn=lambda i: i.get("remaining_days"),
         attrs_fn=lambda i: {"default_remaining_days": i.get("default_remaining_days")},
@@ -91,6 +98,7 @@ _LITTER_BOX_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     RevolooDeviceSensorDescription(
         key="garbage_bag_remaining_days",
         translation_key="garbage_bag_remaining_days",
+        entity_category=EntityCategory.DIAGNOSTIC,
         native_unit_of_measurement=UnitOfTime.DAYS,
         value_fn=lambda i: i.get("garbage_bag_remaining_days"),
         attrs_fn=lambda i: {"cycle_time_days": i.get("garbage_bag_cycle_time")},
@@ -100,8 +108,16 @@ _LITTER_BOX_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
 _WATER_DISPENSER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     _COMMON_EVENT_SENSOR,
     RevolooDeviceSensorDescription(
+        key="status_id",
+        translation_key="water_dispenser_status",
+        value_fn=lambda i: _STATUS_ID_LABELS.get(
+            i.get("status_id"), i.get("status_id")
+        ),
+    ),
+    RevolooDeviceSensorDescription(
         key="filter_remaining_days",
         translation_key="filter_remaining_days",
+        entity_category=EntityCategory.DIAGNOSTIC,
         native_unit_of_measurement=UnitOfTime.DAYS,
         value_fn=lambda i: i.get("remaining_days"),
         attrs_fn=lambda i: {"default_remaining_days": i.get("default_remaining_days")},
@@ -111,18 +127,47 @@ _WATER_DISPENSER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
 _FEEDER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     _COMMON_EVENT_SENSOR,
     RevolooDeviceSensorDescription(
+        key="status_id",
+        translation_key="feeder_status",
+        value_fn=lambda i: _STATUS_ID_LABELS.get(
+            i.get("status_id"), i.get("status_id")
+        ),
+    ),
+    RevolooDeviceSensorDescription(
+        key="meals_fed_today",
+        translation_key="meals_fed_today",
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        value_fn=lambda i: (i.get("auto_qty") or 0) + (i.get("manual_qty") or 0),
+    ),
+    RevolooDeviceSensorDescription(
+        key="meals_fed_today_auto",
+        translation_key="meals_fed_today_auto",
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        value_fn=lambda i: i.get("auto_qty"),
+    ),
+    RevolooDeviceSensorDescription(
+        key="meals_fed_today_manual",
+        translation_key="meals_fed_today_manual",
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        value_fn=lambda i: i.get("manual_qty"),
+    ),
+    RevolooDeviceSensorDescription(
         key="plan_qty",
         translation_key="plan_qty",
+        entity_category=EntityCategory.CONFIG,
         value_fn=lambda i: i.get("plan_qty"),
     ),
     RevolooDeviceSensorDescription(
         key="desiccant_remaining_days",
         translation_key="desiccant_remaining_days",
+        entity_category=EntityCategory.DIAGNOSTIC,
         native_unit_of_measurement=UnitOfTime.DAYS,
         value_fn=lambda i: i.get("remaining_days"),
         attrs_fn=lambda i: {"default_remaining_days": i.get("default_remaining_days")},
     ),
 )
+
+_FEEDER_PLAN_ATTR_KEYS = ("plan_id", "time", "quantity", "open")
 
 DEVICE_SENSORS: dict[str, tuple[RevolooDeviceSensorDescription, ...]] = {
     DEVICE_TYPE_LITTER_BOX: _LITTER_BOX_SENSORS,
@@ -252,6 +297,8 @@ async def async_setup_entry(
             entities.append(
                 RevolooDeviceSensor(coordinator, user_device_id, description)
             )
+        if device.device_type == DEVICE_TYPE_FEEDER:
+            entities.append(RevolooFeedingPlansSensor(coordinator, user_device_id))
     for pet_id in coordinator.data.pets:
         for description in _PET_SENSORS:
             entities.append(RevolooPetSensor(coordinator, pet_id, description))
@@ -283,6 +330,31 @@ class RevolooDeviceSensor(RevolooDeviceEntity, SensorEntity):
         if self.entity_description.attrs_fn is None:
             return None
         return self.entity_description.attrs_fn(self.device.info)
+
+
+class RevolooFeedingPlansSensor(RevolooDeviceEntity, SensorEntity):
+    """The feeder's current on-device feeding plans (read-only)."""
+
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_translation_key = "feeding_plans"
+    _attr_state_class = None
+
+    def __init__(self, coordinator: RevolooCoordinator, user_device_id: int) -> None:
+        super().__init__(coordinator, user_device_id)
+        self._attr_unique_id = f"{user_device_id}_feeding_plans"
+
+    @property
+    def native_value(self) -> int:
+        return len(self.device.plans)
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        return {
+            "plans": [
+                {k: plan.get(k) for k in _FEEDER_PLAN_ATTR_KEYS}
+                for plan in self.device.plans
+            ]
+        }
 
 
 class RevolooPetSensor(RevolooPetEntity, SensorEntity):

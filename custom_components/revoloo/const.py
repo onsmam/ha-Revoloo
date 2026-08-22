@@ -51,3 +51,20 @@ MANUFACTURER = "Notty Cat"
 # reset calls; it both reconfigures the reminder cycle length and resets the
 # remaining-days countdown to it. Other action codes are not known.
 REMINDER_RESET_ACTION = 3
+
+# litter_box/one_key "one_key" values. 1 was captured directly (manual
+# clean). 2 and 3 are the device owner's own best guess from the app's UI,
+# not captured traffic — LITTER_BOX_ONE_KEY_EMPTY is intentionally unused
+# for now pending their confirmation.
+LITTER_BOX_ONE_KEY_CLEAN = 1
+LITTER_BOX_ONE_KEY_EMPTY = 2
+LITTER_BOX_ONE_KEY_SMOOTH = 3
+
+# Options-flow key prefix for "which `schedule.*` helper feeds this feeder's
+# plans", keyed per feeder user_device_id since an account could have more
+# than one feeder.
+FEEDER_SCHEDULE_ENTITY_PREFIX = "feeder_schedule_entity_"
+
+# Custom data key the device owner puts on schedule-helper blocks to carry
+# the portion count for that block (see feeding_schedule.py).
+SCHEDULE_BLOCK_PORTIONS_KEY = "porties"

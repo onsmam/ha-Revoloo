@@ -92,6 +92,7 @@ _FEEDER_BINARY_SENSORS: tuple[RevolooBinarySensorDescription, ...] = (
     RevolooBinarySensorDescription(
         key="food",
         translation_key="food_available",
+        entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda i: bool(i.get("food")),
     ),
     RevolooBinarySensorDescription(
@@ -99,12 +100,6 @@ _FEEDER_BINARY_SENSORS: tuple[RevolooBinarySensorDescription, ...] = (
         translation_key="pet_present",
         device_class=BinarySensorDeviceClass.OCCUPANCY,
         value_fn=lambda i: bool(i.get("present")),
-    ),
-    RevolooBinarySensorDescription(
-        key="open_desiccant_remind",
-        translation_key="desiccant_reminder_enabled",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda i: bool(i.get("open_desiccant_remind")),
     ),
 )
 
