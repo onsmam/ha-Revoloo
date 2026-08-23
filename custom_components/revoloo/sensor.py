@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any
 
 from homeassistant.components.sensor import (
@@ -16,6 +17,7 @@ from homeassistant.const import UnitOfMass, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.util import dt as dt_util
 
 from .const import (
     DEVICE_TYPE_FEEDER,
@@ -77,19 +79,30 @@ def _find_feeding_event(info: dict[str, Any]) -> dict[str, Any] | None:
     return None
 
 
-def _last_feeding(info: dict[str, Any]) -> str | None:
+def _parse_event_datetime(event: dict[str, Any]) -> datetime | None:
+    date_str = event.get("date")
+    time_str = event.get("time")
+    if not date_str or not time_str:
+        return None
+    for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M"):
+        try:
+            naive = datetime.strptime(f"{date_str} {time_str}", fmt)
+        except ValueError:
+            continue
+        return naive.replace(tzinfo=dt_util.DEFAULT_TIME_ZONE)
+    return None
+
+
+def _last_feeding(info: dict[str, Any]) -> datetime | None:
     event = _find_feeding_event(info)
-    return event.get("event") if event else None
+    return _parse_event_datetime(event) if event else None
 
 
 def _last_feeding_attrs(info: dict[str, Any]) -> dict[str, Any]:
     event = _find_feeding_event(info)
     if not event:
         return {}
-    return {
-        "date": event.get("date"),
-        "time": event.get("time"),
-    }
+    return {"event": event.get("event")}
 
 _LITTER_BOX_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     _COMMON_EVENT_SENSOR,
@@ -152,6 +165,7 @@ _FEEDER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     RevolooDeviceSensorDescription(
         key="last_feeding",
         translation_key="last_feeding",
+        device_class=SensorDeviceClass.TIMESTAMP,
         value_fn=_last_feeding,
         attrs_fn=_last_feeding_attrs,
     ),
