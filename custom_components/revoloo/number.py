@@ -8,6 +8,7 @@ pattern via a plain setter, so it reuses the same entity class.
 """
 from __future__ import annotations
 
+import asyncio
 from collections.abc import Awaitable, Callable
 
 from homeassistant.components.number import (
@@ -24,6 +25,12 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import DEVICE_TYPE_FEEDER, DEVICE_TYPE_LITTER_BOX
 from .coordinator import DEFAULT_MANUAL_FEED_QTY, RevolooCoordinator
 from .entity import RevolooDeviceEntity
+
+# How long a reminder-cycle number has to sit still before the change is
+# actually sent to the device. Repeatedly pressing +/- would otherwise fire
+# one API call per click; this collapses a burst of clicks into one call
+# after the value settles.
+_DEBOUNCE_SECONDS = 1.5
 
 
 async def async_setup_entry(
@@ -110,14 +117,38 @@ class RevolooReminderCycleNumber(RevolooDeviceEntity, NumberEntity):
         self._attr_native_max_value = max_value
         self._attr_native_step = 1
         self._attr_native_unit_of_measurement = unit
+        self._pending_value: float | None = None
+        self._debounce_task: asyncio.Task | None = None
 
     @property
     def native_value(self) -> float | None:
+        if self._pending_value is not None:
+            return self._pending_value
         return self.device.info.get(self._info_key)
 
     async def async_set_native_value(self, value: float) -> None:
+        self._pending_value = value
+        self.async_write_ha_state()
+
+        if self._debounce_task is not None:
+            self._debounce_task.cancel()
+        self._debounce_task = self.hass.async_create_task(
+            self._debounced_set(value)
+        )
+
+    async def _debounced_set(self, value: float) -> None:
+        try:
+            await asyncio.sleep(_DEBOUNCE_SECONDS)
+        except asyncio.CancelledError:
+            return
         await self._set_fn(self._user_device_id, int(value))
+        self._pending_value = None
         await self.coordinator.async_request_refresh()
+
+    async def async_will_remove_from_hass(self) -> None:
+        if self._debounce_task is not None:
+            self._debounce_task.cancel()
+        await super().async_will_remove_from_hass()
 
 
 class RevolooManualFeedQtyNumber(RevolooDeviceEntity, RestoreNumber):
