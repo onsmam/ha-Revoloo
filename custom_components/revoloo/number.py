@@ -30,7 +30,7 @@ from .entity import RevolooDeviceEntity
 # actually sent to the device. Repeatedly pressing +/- would otherwise fire
 # one API call per click; this collapses a burst of clicks into one call
 # after the value settles.
-_DEBOUNCE_SECONDS = 1.5
+_DEBOUNCE_SECONDS = 0.5
 
 
 async def async_setup_entry(
