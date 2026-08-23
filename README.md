@@ -44,7 +44,10 @@ in Diagnostic); anything not called out below sits in the main section.
   (Config), litter-reminder and garbage-bag-reminder on/off switches
   (Config), litter-reminder cycle and garbage-bag-reminder cycle in days —
   resets the countdown when changed (Config), auto-clean delay 1-15 minutes
-  (Config), "Clean now" button, "Smooth litter" button.
+  (Config), "Clean now" button, "Smooth litter" button, "Empty litter"
+  button, "Reset litter reminder" and "Reset garbage bag reminder" buttons
+  (Config, reset the countdown to its current cycle length without
+  changing it).
 
 ### Water fountain
 
@@ -56,10 +59,14 @@ in Diagnostic); anything not called out below sits in the main section.
 
 ### Feeder
 
-- **Sensors**: last event log line, status, meals fed today (total, auto,
-  manual), planned portion size (Config), desiccant remaining (Diagnostic),
-  and a read-only "Feeding plans" sensor (Diagnostic) listing the feeder's
-  current on-device plans — see
+- **Sensors**: last event log line, status, "Last fed" (a proper timestamp
+  built from the most recent dispense event's `date`/`time` fields — found
+  by scanning the event log for an entry mentioning "dispense"/"food", auto
+  and manual alike, not just whenever Home Assistant happened to last poll;
+  the event's original text is kept as an attribute), meals fed today
+  (total, auto, manual), planned portion size (Config), desiccant remaining
+  (Diagnostic), and a read-only "Feeding plans" sensor (Diagnostic) listing
+  the feeder's current on-device plans — see
   [Feeding schedule sync](#feeding-schedule-sync).
 - **Binary sensors**: food available (Diagnostic, read-only), pet present.
 - **Controls**: LED switch, function-button-lock switch (Config),
@@ -90,10 +97,10 @@ settings, even though their current value is visible via the sensors above.
 They are exposed read-only for now:
 
 - Litter box: ozone deodorization, voice prompts, do-not-disturb schedule.
-  Also, the litter box's "Smooth litter" one_key value (3) and the "Empty
-  litter" value (guessed as 2) are the device owner's best guess from the
-  app's UI rather than captured traffic — "Empty litter" isn't wired up yet
-  pending their confirmation.
+  Also, the "Smooth litter" (one_key value 3) and "Empty litter" (one_key
+  value 2) buttons use the device owner's own best guess from the app's UI
+  rather than captured traffic — wired up on their explicit request, to be
+  revised if either turns out not to match the actual device behavior.
 - Water fountain: do-not-disturb schedule.
 - Feeder: automatic/planned portion sizes (still read-only sensors). Feeding
   plans can now be *pushed* from a Home Assistant `schedule` helper (see
@@ -122,7 +129,10 @@ can be driven from a Home Assistant `schedule` helper instead of the app:
 Syncing **deletes every plan currently on the device and re-adds** the ones
 from the schedule helper — it's a one-way, full replace, not a merge. The
 device's actual plan list (as last read from the API) is shown separately in
-a read-only "Feeding plans" sensor, so you can confirm the push worked.
+a read-only "Feeding plans" sensor, so you can confirm the push worked. Its
+state is a readable summary like `08:00 x1, 19:00 x3` (a plan turned off in
+the app shows as `08:00 x1 (off)`); the full list with plan IDs is also
+available as an attribute for automations.
 
 The device has no concept of different plans on different days of the week —
 every plan is just a `{time, portions}` pair that repeats daily. A

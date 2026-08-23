@@ -15,6 +15,7 @@ from .const import (
     DEVICE_TYPE_WATER_DISPENSER,
     FEEDER_SCHEDULE_ENTITY_PREFIX,
     LITTER_BOX_ONE_KEY_CLEAN,
+    LITTER_BOX_ONE_KEY_EMPTY,
     LITTER_BOX_ONE_KEY_SMOOTH,
 )
 from .coordinator import RevolooCoordinator
@@ -45,6 +46,25 @@ async def async_setup_entry(
                     user_device_id, one_key=LITTER_BOX_ONE_KEY_SMOOTH
                 )
 
+            async def _empty_litter(user_device_id: int) -> None:
+                await client.litter_box_one_key(
+                    user_device_id, one_key=LITTER_BOX_ONE_KEY_EMPTY
+                )
+
+            async def _reset_litter_remind(user_device_id: int) -> None:
+                cycle_time = coordinator.data.devices[user_device_id].info.get(
+                    "default_remaining_days"
+                )
+                await client.litter_box_set_litter_remind(user_device_id, cycle_time)
+
+            async def _reset_garbage_bag_remind(user_device_id: int) -> None:
+                cycle_time = coordinator.data.devices[user_device_id].info.get(
+                    "garbage_bag_cycle_time"
+                )
+                await client.litter_box_set_garbage_bag_remind(
+                    user_device_id, cycle_time
+                )
+
             entities.append(
                 RevolooButton(
                     coordinator,
@@ -61,6 +81,35 @@ async def async_setup_entry(
                     key="smooth_litter",
                     translation_key="smooth_litter",
                     action_fn=_smooth_litter,
+                )
+            )
+            entities.append(
+                RevolooButton(
+                    coordinator,
+                    user_device_id,
+                    key="empty_litter",
+                    translation_key="empty_litter",
+                    action_fn=_empty_litter,
+                )
+            )
+            entities.append(
+                RevolooButton(
+                    coordinator,
+                    user_device_id,
+                    key="reset_litter_reminder",
+                    translation_key="reset_litter_reminder",
+                    action_fn=_reset_litter_remind,
+                    entity_category=EntityCategory.CONFIG,
+                )
+            )
+            entities.append(
+                RevolooButton(
+                    coordinator,
+                    user_device_id,
+                    key="reset_garbage_bag_reminder",
+                    translation_key="reset_garbage_bag_reminder",
+                    action_fn=_reset_garbage_bag_remind,
+                    entity_category=EntityCategory.CONFIG,
                 )
             )
         elif device.device_type == DEVICE_TYPE_WATER_DISPENSER:

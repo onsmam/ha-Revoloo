@@ -60,8 +60,8 @@ REMINDER_RESET_ACTION = 3
 
 # litter_box/one_key "one_key" values. 1 was captured directly (manual
 # clean). 2 and 3 are the device owner's own best guess from the app's UI,
-# not captured traffic — LITTER_BOX_ONE_KEY_EMPTY is intentionally unused
-# for now pending their confirmation.
+# not captured traffic — wired up on their explicit request, to be revised
+# if it turns out not to match the actual device behavior.
 LITTER_BOX_ONE_KEY_CLEAN = 1
 LITTER_BOX_ONE_KEY_EMPTY = 2
 LITTER_BOX_ONE_KEY_SMOOTH = 3

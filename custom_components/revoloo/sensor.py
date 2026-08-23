@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any
 
 from homeassistant.components.sensor import (
@@ -16,6 +17,7 @@ from homeassistant.const import UnitOfMass, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.util import dt as dt_util
 
 from .const import (
     DEVICE_TYPE_FEEDER,
@@ -67,6 +69,40 @@ _COMMON_EVENT_SENSOR = RevolooDeviceSensorDescription(
     value_fn=_last_event,
     attrs_fn=_last_event_attrs,
 )
+
+
+def _find_feeding_event(info: dict[str, Any]) -> dict[str, Any] | None:
+    for event in info.get("events") or []:
+        text = event.get("event") or ""
+        if "dispense" in text.lower() and "food" in text.lower():
+            return event
+    return None
+
+
+def _parse_event_datetime(event: dict[str, Any]) -> datetime | None:
+    date_str = event.get("date")
+    time_str = event.get("time")
+    if not date_str or not time_str:
+        return None
+    for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M"):
+        try:
+            naive = datetime.strptime(f"{date_str} {time_str}", fmt)
+        except ValueError:
+            continue
+        return naive.replace(tzinfo=dt_util.DEFAULT_TIME_ZONE)
+    return None
+
+
+def _last_feeding(info: dict[str, Any]) -> datetime | None:
+    event = _find_feeding_event(info)
+    return _parse_event_datetime(event) if event else None
+
+
+def _last_feeding_attrs(info: dict[str, Any]) -> dict[str, Any]:
+    event = _find_feeding_event(info)
+    if not event:
+        return {}
+    return {"event": event.get("event")}
 
 _LITTER_BOX_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     _COMMON_EVENT_SENSOR,
@@ -126,6 +162,13 @@ _WATER_DISPENSER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
 
 _FEEDER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     _COMMON_EVENT_SENSOR,
+    RevolooDeviceSensorDescription(
+        key="last_feeding",
+        translation_key="last_feeding",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        value_fn=_last_feeding,
+        attrs_fn=_last_feeding_attrs,
+    ),
     RevolooDeviceSensorDescription(
         key="status_id",
         translation_key="feeder_status",
@@ -333,7 +376,12 @@ class RevolooDeviceSensor(RevolooDeviceEntity, SensorEntity):
 
 
 class RevolooFeedingPlansSensor(RevolooDeviceEntity, SensorEntity):
-    """The feeder's current on-device feeding plans (read-only)."""
+    """The feeder's current on-device feeding plans (read-only).
+
+    The state is a human-readable summary (e.g. "08:00 x1, 19:00 x3") so the
+    schedule is visible at a glance, e.g. right after a schedule sync, without
+    having to open the entity's attributes.
+    """
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_translation_key = "feeding_plans"
@@ -344,8 +392,17 @@ class RevolooFeedingPlansSensor(RevolooDeviceEntity, SensorEntity):
         self._attr_unique_id = f"{user_device_id}_feeding_plans"
 
     @property
-    def native_value(self) -> int:
-        return len(self.device.plans)
+    def native_value(self) -> str:
+        plans = self.device.plans
+        if not plans:
+            return "No plans"
+        parts = [
+            f"{plan.get('time')} x{plan.get('quantity')}"
+            + ("" if plan.get("open", True) else " (off)")
+            for plan in sorted(plans, key=lambda p: p.get("time") or "")
+        ]
+        summary = ", ".join(parts)
+        return summary[:255]
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
