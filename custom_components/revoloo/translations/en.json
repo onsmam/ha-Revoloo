@@ -197,6 +197,9 @@
       "smooth_litter": {
         "name": "Smooth litter"
       },
+      "empty_litter": {
+        "name": "Empty litter"
+      },
       "reset_desiccant": {
         "name": "Reset desiccant"
       },

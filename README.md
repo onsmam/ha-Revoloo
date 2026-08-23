@@ -44,7 +44,7 @@ in Diagnostic); anything not called out below sits in the main section.
   (Config), litter-reminder and garbage-bag-reminder on/off switches
   (Config), litter-reminder cycle and garbage-bag-reminder cycle in days —
   resets the countdown when changed (Config), auto-clean delay 1-15 minutes
-  (Config), "Clean now" button, "Smooth litter" button.
+  (Config), "Clean now" button, "Smooth litter" button, "Empty litter" button.
 
 ### Water fountain
 
@@ -90,10 +90,10 @@ settings, even though their current value is visible via the sensors above.
 They are exposed read-only for now:
 
 - Litter box: ozone deodorization, voice prompts, do-not-disturb schedule.
-  Also, the litter box's "Smooth litter" one_key value (3) and the "Empty
-  litter" value (guessed as 2) are the device owner's best guess from the
-  app's UI rather than captured traffic — "Empty litter" isn't wired up yet
-  pending their confirmation.
+  Also, the "Smooth litter" (one_key value 3) and "Empty litter" (one_key
+  value 2) buttons use the device owner's own best guess from the app's UI
+  rather than captured traffic — wired up on their explicit request, to be
+  revised if either turns out not to match the actual device behavior.
 - Water fountain: do-not-disturb schedule.
 - Feeder: automatic/planned portion sizes (still read-only sensors). Feeding
   plans can now be *pushed* from a Home Assistant `schedule` helper (see

@@ -15,6 +15,7 @@ from .const import (
     DEVICE_TYPE_WATER_DISPENSER,
     FEEDER_SCHEDULE_ENTITY_PREFIX,
     LITTER_BOX_ONE_KEY_CLEAN,
+    LITTER_BOX_ONE_KEY_EMPTY,
     LITTER_BOX_ONE_KEY_SMOOTH,
 )
 from .coordinator import RevolooCoordinator
@@ -45,6 +46,11 @@ async def async_setup_entry(
                     user_device_id, one_key=LITTER_BOX_ONE_KEY_SMOOTH
                 )
 
+            async def _empty_litter(user_device_id: int) -> None:
+                await client.litter_box_one_key(
+                    user_device_id, one_key=LITTER_BOX_ONE_KEY_EMPTY
+                )
+
             entities.append(
                 RevolooButton(
                     coordinator,
@@ -61,6 +67,15 @@ async def async_setup_entry(
                     key="smooth_litter",
                     translation_key="smooth_litter",
                     action_fn=_smooth_litter,
+                )
+            )
+            entities.append(
+                RevolooButton(
+                    coordinator,
+                    user_device_id,
+                    key="empty_litter",
+                    translation_key="empty_litter",
+                    action_fn=_empty_litter,
                 )
             )
         elif device.device_type == DEVICE_TYPE_WATER_DISPENSER:

@@ -197,6 +197,9 @@
       "smooth_litter": {
         "name": "Kattenbakvulling gladstrijken"
       },
+      "empty_litter": {
+        "name": "Kattenbak legen"
+      },
       "reset_desiccant": {
         "name": "Droogmiddel resetten"
       },
