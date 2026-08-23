@@ -200,6 +200,12 @@
       "empty_litter": {
         "name": "Kattenbak legen"
       },
+      "reset_litter_reminder": {
+        "name": "Kattenbakvulling-herinnering resetten"
+      },
+      "reset_garbage_bag_reminder": {
+        "name": "Vuilniszak-herinnering resetten"
+      },
       "reset_desiccant": {
         "name": "Droogmiddel resetten"
       },

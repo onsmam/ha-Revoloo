@@ -44,7 +44,10 @@ in Diagnostic); anything not called out below sits in the main section.
   (Config), litter-reminder and garbage-bag-reminder on/off switches
   (Config), litter-reminder cycle and garbage-bag-reminder cycle in days —
   resets the countdown when changed (Config), auto-clean delay 1-15 minutes
-  (Config), "Clean now" button, "Smooth litter" button, "Empty litter" button.
+  (Config), "Clean now" button, "Smooth litter" button, "Empty litter"
+  button, "Reset litter reminder" and "Reset garbage bag reminder" buttons
+  (Config, reset the countdown to its current cycle length without
+  changing it).
 
 ### Water fountain
 

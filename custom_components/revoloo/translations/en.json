@@ -200,6 +200,12 @@
       "empty_litter": {
         "name": "Empty litter"
       },
+      "reset_litter_reminder": {
+        "name": "Reset litter reminder"
+      },
+      "reset_garbage_bag_reminder": {
+        "name": "Reset garbage bag reminder"
+      },
       "reset_desiccant": {
         "name": "Reset desiccant"
       },
