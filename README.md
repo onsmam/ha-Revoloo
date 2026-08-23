@@ -59,10 +59,12 @@ in Diagnostic); anything not called out below sits in the main section.
 
 ### Feeder
 
-- **Sensors**: last event log line, status, meals fed today (total, auto,
-  manual), planned portion size (Config), desiccant remaining (Diagnostic),
-  and a read-only "Feeding plans" sensor (Diagnostic) listing the feeder's
-  current on-device plans — see
+- **Sensors**: last event log line, status, "Last fed" (the most recent
+  dispense event's text, date and time — found by scanning the event log for
+  an entry mentioning "dispense"/"food", auto and manual alike), meals fed
+  today (total, auto, manual), planned portion size (Config), desiccant
+  remaining (Diagnostic), and a read-only "Feeding plans" sensor (Diagnostic)
+  listing the feeder's current on-device plans — see
   [Feeding schedule sync](#feeding-schedule-sync).
 - **Binary sensors**: food available (Diagnostic, read-only), pet present.
 - **Controls**: LED switch, function-button-lock switch (Config),

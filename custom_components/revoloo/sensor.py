@@ -68,6 +68,29 @@ _COMMON_EVENT_SENSOR = RevolooDeviceSensorDescription(
     attrs_fn=_last_event_attrs,
 )
 
+
+def _find_feeding_event(info: dict[str, Any]) -> dict[str, Any] | None:
+    for event in info.get("events") or []:
+        text = event.get("event") or ""
+        if "dispense" in text.lower() and "food" in text.lower():
+            return event
+    return None
+
+
+def _last_feeding(info: dict[str, Any]) -> str | None:
+    event = _find_feeding_event(info)
+    return event.get("event") if event else None
+
+
+def _last_feeding_attrs(info: dict[str, Any]) -> dict[str, Any]:
+    event = _find_feeding_event(info)
+    if not event:
+        return {}
+    return {
+        "date": event.get("date"),
+        "time": event.get("time"),
+    }
+
 _LITTER_BOX_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     _COMMON_EVENT_SENSOR,
     RevolooDeviceSensorDescription(
@@ -126,6 +149,12 @@ _WATER_DISPENSER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
 
 _FEEDER_SENSORS: tuple[RevolooDeviceSensorDescription, ...] = (
     _COMMON_EVENT_SENSOR,
+    RevolooDeviceSensorDescription(
+        key="last_feeding",
+        translation_key="last_feeding",
+        value_fn=_last_feeding,
+        attrs_fn=_last_feeding_attrs,
+    ),
     RevolooDeviceSensorDescription(
         key="status_id",
         translation_key="feeder_status",

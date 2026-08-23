@@ -113,6 +113,9 @@
       "feeder_status": {
         "name": "Status"
       },
+      "last_feeding": {
+        "name": "Last fed"
+      },
       "feeding_plans": {
         "name": "Feeding plans"
       }
