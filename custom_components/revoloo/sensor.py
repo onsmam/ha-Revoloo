@@ -29,7 +29,7 @@ from .entity import RevolooDeviceEntity, RevolooPetEntity
 
 # Best-effort labels for device status codes actually observed in the capture.
 # Any other value is shown as its raw number rather than guessed at.
-_LITTER_BOX_STATUS = {0: "idle", 4: "cleaning"}
+_LITTER_BOX_STATUS = {0: "idle", 4: "cleaning", 5: "emptying", 6: "smoothing"}
 
 # "status_id" is a generic field present on every device type (alongside
 # is_owner, aliyun_device_name, etc). Only 1 ("normal") has been confirmed
