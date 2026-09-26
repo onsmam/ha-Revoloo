@@ -130,13 +130,12 @@ def _async_remove_stale_devices(
 async def async_remove_config_entry_device(
     hass: HomeAssistant, entry: RevolooConfigEntry, device_entry: DeviceEntry
 ) -> bool:
-    """Allow manually deleting a device from the integration's device page.
+    """Allow manually deleting any device from the integration's device page.
 
-    Only devices/pets the API no longer reports may be removed this way —
-    HA calls this to decide whether to show the "Delete" option at all.
+    Deleting a device the API still reports isn't destructive: its entities
+    get recreated (under a fresh device registry entry) on the next poll.
     """
-    coordinator = entry.runtime_data.coordinator
-    return not device_entry.identifiers & _valid_device_identifiers(coordinator)
+    return True
 
 
 async def _async_update_listener(hass: HomeAssistant, entry: RevolooConfigEntry) -> None:
