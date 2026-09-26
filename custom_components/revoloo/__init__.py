@@ -132,8 +132,8 @@ async def async_remove_config_entry_device(
 ) -> bool:
     """Allow manually deleting any device from the integration's device page.
 
-    Deleting a device the API still reports isn't destructive: its entities
-    get recreated (under a fresh device registry entry) on the next poll.
+    Platforms only add entities at setup, so a deleted device stays gone
+    until the integration is reloaded (if the API still reports it then).
     """
     return True
 
