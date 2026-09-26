@@ -97,10 +97,11 @@ settings, even though their current value is visible via the sensors above.
 They are exposed read-only for now:
 
 - Litter box: ozone deodorization, voice prompts, do-not-disturb schedule.
-  Also, the "Smooth litter" (one_key value 3) and "Empty litter" (one_key
-  value 2) buttons use the device owner's own best guess from the app's UI
-  rather than captured traffic — wired up on their explicit request, to be
-  revised if either turns out not to match the actual device behavior.
+  Also, the "Smooth litter" button's one_key value (3) is still the device
+  owner's best guess from the app's UI rather than captured traffic, not yet
+  independently verified — the "Empty litter" button's value (2) was the
+  same kind of guess but has since been confirmed correct against the real
+  device.
 - Water fountain: do-not-disturb schedule.
 - Feeder: automatic/planned portion sizes (still read-only sensors). Feeding
   plans can now be *pushed* from a Home Assistant `schedule` helper (see

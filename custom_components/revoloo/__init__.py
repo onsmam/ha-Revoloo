@@ -8,7 +8,9 @@ from typing import TYPE_CHECKING
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_TOKEN, Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.device_registry import DeviceEntry
 from homeassistant.helpers.event import async_track_time_change
 
 from .api import RevolooApiClient
@@ -17,6 +19,7 @@ from .const import (
     CONF_SCAN_INTERVAL,
     DEFAULT_SCAN_INTERVAL,
     DEVICE_TYPE_FEEDER,
+    DOMAIN,
     FEEDER_SCHEDULE_ENTITY_PREFIX,
 )
 from .coordinator import RevolooCoordinator
@@ -68,6 +71,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: RevolooConfigEntry) -> b
     coordinator = RevolooCoordinator(hass, entry, client, scan_interval)
     await coordinator.async_config_entry_first_refresh()
 
+    _async_remove_stale_devices(hass, entry, coordinator)
+
     entry.runtime_data = RevolooRuntimeData(coordinator=coordinator)
     entry.async_on_unload(entry.add_update_listener(_async_update_listener))
 
@@ -94,6 +99,42 @@ async def async_setup_entry(hass: HomeAssistant, entry: RevolooConfigEntry) -> b
             )
         )
 
+    return True
+
+
+def _valid_device_identifiers(coordinator: RevolooCoordinator) -> set[tuple[str, str]]:
+    """Identifiers of devices/pets the API currently reports."""
+    return {
+        (DOMAIN, str(user_device_id)) for user_device_id in coordinator.data.devices
+    } | {(DOMAIN, f"pet_{pet_id}") for pet_id in coordinator.data.pets}
+
+
+def _async_remove_stale_devices(
+    hass: HomeAssistant, entry: RevolooConfigEntry, coordinator: RevolooCoordinator
+) -> None:
+    """Remove HA devices for user_device_ids/pets the API no longer reports.
+
+    Unpairing and re-pairing a device in the app gets it a new
+    user_device_id — the old one just disappears from get_user_devices, so
+    without this its HA device would linger forever with no entities left
+    to remove and thus no way to delete it from the UI.
+    """
+    valid_identifiers = _valid_device_identifiers(coordinator)
+
+    device_registry = dr.async_get(hass)
+    for device in dr.async_entries_for_config_entry(device_registry, entry.entry_id):
+        if not device.identifiers & valid_identifiers:
+            device_registry.async_remove_device(device.id)
+
+
+async def async_remove_config_entry_device(
+    hass: HomeAssistant, entry: RevolooConfigEntry, device_entry: DeviceEntry
+) -> bool:
+    """Allow manually deleting any device from the integration's device page.
+
+    Platforms only add entities at setup, so a deleted device stays gone
+    until the integration is reloaded (if the API still reports it then).
+    """
     return True
 
 
