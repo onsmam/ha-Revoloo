@@ -10,6 +10,7 @@ from homeassistant.const import CONF_TOKEN, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.device_registry import DeviceEntry
 from homeassistant.helpers.event import async_track_time_change
 
 from .api import RevolooApiClient
@@ -101,6 +102,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: RevolooConfigEntry) -> b
     return True
 
 
+def _valid_device_identifiers(coordinator: RevolooCoordinator) -> set[tuple[str, str]]:
+    """Identifiers of devices/pets the API currently reports."""
+    return {
+        (DOMAIN, str(user_device_id)) for user_device_id in coordinator.data.devices
+    } | {(DOMAIN, f"pet_{pet_id}") for pet_id in coordinator.data.pets}
+
+
 def _async_remove_stale_devices(
     hass: HomeAssistant, entry: RevolooConfigEntry, coordinator: RevolooCoordinator
 ) -> None:
@@ -111,14 +119,24 @@ def _async_remove_stale_devices(
     without this its HA device would linger forever with no entities left
     to remove and thus no way to delete it from the UI.
     """
-    valid_identifiers = {
-        (DOMAIN, str(user_device_id)) for user_device_id in coordinator.data.devices
-    } | {(DOMAIN, f"pet_{pet_id}") for pet_id in coordinator.data.pets}
+    valid_identifiers = _valid_device_identifiers(coordinator)
 
     device_registry = dr.async_get(hass)
     for device in dr.async_entries_for_config_entry(device_registry, entry.entry_id):
         if not device.identifiers & valid_identifiers:
             device_registry.async_remove_device(device.id)
+
+
+async def async_remove_config_entry_device(
+    hass: HomeAssistant, entry: RevolooConfigEntry, device_entry: DeviceEntry
+) -> bool:
+    """Allow manually deleting a device from the integration's device page.
+
+    Only devices/pets the API no longer reports may be removed this way —
+    HA calls this to decide whether to show the "Delete" option at all.
+    """
+    coordinator = entry.runtime_data.coordinator
+    return not device_entry.identifiers & _valid_device_identifiers(coordinator)
 
 
 async def _async_update_listener(hass: HomeAssistant, entry: RevolooConfigEntry) -> None:
